@@ -9,7 +9,6 @@
 #define KEYPAD_H_
 
 #include "lcd.h"
-#include "delay.h"
 
 void setup_keypad();
 uint8_t has_press();

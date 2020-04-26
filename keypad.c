@@ -50,7 +50,7 @@ uint8_t update_key_press(uint8_t prev_key)
 
     uint8_t curr_key_check= get_key_pressed();
     uint8_t curr_key_val = curr_key_check;
-    uint8_t i, counter;
+    uint8_t counter;
     uint8_t true_button = 0, false_button = 0;
 
     while(!true_button)

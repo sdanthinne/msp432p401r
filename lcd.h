@@ -32,6 +32,10 @@ void setup_lcd_pins();
 
 void setup_lcd_pins_4();
 
+void home_lcd();
+
+void home_lcd_4();
+
 void set_address_counter_4(uint8_t row, uint8_t col);
 
 #endif /* LCD_H_ */

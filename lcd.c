@@ -234,20 +234,21 @@ void write_char_4(uint8_t c)
 }
 
 /**
- * prints a string to the display
+ * prints a string to the display -
+ * commented code is the old newline automation
  */
 void write_string(uint8_t * c)
 {
-    uint8_t count = 0;
+    //uint8_t count = 0;
     while(*c!=0)
     {
-        if(count==20)
-        {
-            //moves the address pointer to the new line
-            write_ins(0xC0);
-        }
+//        if(count==20)
+//        {
+//            //moves the address pointer to the new line
+//            write_ins(0xC0);
+//        }
         write_char(*c);
-        count += 1;
+        //count += 1;
         c+=sizeof(uint8_t);
     }
 }
@@ -270,29 +271,23 @@ void set_address_counter_4(uint8_t row, uint8_t col)
     write_ins_4(location);
 }
 
-/**
- * gets the location of the lcd cursor
- */
-uint8_t get_lcd_location_4()
-{
-    return read_ins_4();
-}
+
 /**
  * needs to be updated
  */
 void write_string_4(uint8_t * c)
 {
-    static uint8_t count=0;
+    //static uint8_t count=0;
     while(*c!=0)
     {
-        if(count==20)//if there are 17 chars written
-        {
-            //moves the ddram address pointer to the new line
-            write_ins_4(0xC0);
-            count=0;
-        }
+//        if(count==20)//if there are 17 chars written
+//        {
+//            //moves the ddram address pointer to the new line
+//            write_ins_4(0xC0);
+//            count=0;
+//        }
         write_char_4(*c);
-        count+=1;
+        //count+=1;
         c+=sizeof(uint8_t);
     }
 }

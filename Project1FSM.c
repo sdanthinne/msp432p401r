@@ -383,9 +383,9 @@ uint8_t logged_in_state(Sys* sys,uint8_t keypress)
     if(sys->prev_state !=LOGGED_IN_STATE)
     {
         clear_display_4();
-        write_string_4("HlloTher");
+        write_string_4("Hello There");
         set_address_counter_4(1,0);//newline
-        write_string_4("GnrlKenobi");
+        write_string_4("General Kenobi");
     }
     sys->prev_state=LOGGED_IN_STATE;
     if(keypress==KEY_STAR) //exit on star

@@ -3,7 +3,7 @@
  * lcd.c
  *
  *  Created on: Apr 14, 2020
- *      Author: sdanthinne, crapp, aknapen
+ *      Author: sdanthinne,crapp,aknapen
  *  Note:
  *      Every function here has a 4-bit equivalent listed after itself.
  *      4-bit equivalents sometimes depend on 8-bit functions.

@@ -4,7 +4,7 @@
  * keypad.c
  *
  *  Created on: Apr 19, 2020
- *      Author: Aknapen,sdanthinne
+ *      Author: aknapen,sdanthinne,crapp
  */
 
 void setup_keypad()

@@ -2,7 +2,7 @@
  * delay.h
  *
  *  Created on: Apr 10, 2020
- *      Author: sdanthinne
+ *      Author: sdanthinne,aknapen,crapp
  */
 
 #ifndef DELAY_H_

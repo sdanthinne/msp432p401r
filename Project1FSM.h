@@ -2,7 +2,7 @@
  * Project1FSM.h
  *
  *  Created on: Apr 26, 2020
- *      Author: sdanthinne
+ *      Author: sdanthinne,aknapen,crapp
  */
 
 #ifndef PROJECT1FSM_H_

@@ -6,6 +6,10 @@
  */
 #include "Project1FSM.h"
 
+/**
+ * struct to define a user
+ * for the system
+ */
 typedef struct
 {
     char username[4];
@@ -33,6 +37,12 @@ typedef struct
     uint8_t curr_input;
 }Sys;
 
+/**
+ * defines a state in the program's FSM
+ * with each state containing an associated
+ * use function and a list of the possible
+ * next states
+ */
 typedef struct State
 {
     uint8_t (*state_function)(Sys*,uint8_t);
@@ -40,7 +50,10 @@ typedef struct State
 } State;
 
 
-
+/**
+ * Numbers FSM states for use in the next array
+ * of each state.
+ */
 #define INIT_STATE 0
 #define READ_USERNAME_STATE 1
 #define PROCESS_NUMBER_STATE 2
@@ -49,6 +62,10 @@ typedef struct State
 #define INCORRECT_STATE 5
 #define LOGGED_IN_STATE 6
 
+/**
+ * Defines each state relative to its placement
+ * in the FSM array
+ */
 #define INIT_STATE_LOC &FSM[0]
 #define READ_USERNAME_STATE_LOC &FSM[1]
 #define PROCESS_NUMBER_STATE_LOC &FSM[2]
@@ -57,6 +74,10 @@ typedef struct State
 #define INCORRECT_STATE_LOC &FSM[5]
 #define LOGGED_IN_STATE_LOC &FSM[6]
 
+/**
+ * List of function prototypes for use by
+ * the FSM array.
+ */
 uint8_t init_state(Sys* sys,uint8_t keypress);
 uint8_t read_username_state(Sys* sys,uint8_t keypress);
 uint8_t process_number_state(Sys* sys,uint8_t keypress);
@@ -67,7 +88,12 @@ uint8_t logged_in_state(Sys* sys,uint8_t keypress);
 uint8_t check_user_exists(Sys *sys);
 
 
-State FSM[7] = {//state function,ns0,ns1.ns2,ns3...
+/**
+ * Defines the organization of the FSM
+ * for P1
+ * Ex. FSM[i] = { state_function, {NEXT_STATE0, NEXT_STATE1, ...}}
+ */
+State FSM[7] = {
                  {init_state,{INIT_STATE_LOC,READ_USERNAME_STATE_LOC,PROCESS_NUMBER_STATE_LOC,PROCESS_ASCII_STATE_LOC,READ_PASSWORD_STATE_LOC,INCORRECT_STATE_LOC,LOGGED_IN_STATE_LOC}},
                  {read_username_state,{INIT_STATE_LOC,READ_USERNAME_STATE_LOC,PROCESS_NUMBER_STATE_LOC,PROCESS_ASCII_STATE_LOC,READ_PASSWORD_STATE_LOC,INCORRECT_STATE_LOC,LOGGED_IN_STATE_LOC}},
                  {process_number_state,{INIT_STATE_LOC,READ_USERNAME_STATE_LOC,PROCESS_NUMBER_STATE_LOC,PROCESS_ASCII_STATE_LOC,READ_PASSWORD_STATE_LOC,INCORRECT_STATE_LOC,LOGGED_IN_STATE_LOC}},
@@ -77,19 +103,31 @@ State FSM[7] = {//state function,ns0,ns1.ns2,ns3...
                  {logged_in_state,{INIT_STATE_LOC,READ_USERNAME_STATE_LOC,PROCESS_NUMBER_STATE_LOC,PROCESS_ASCII_STATE_LOC,READ_PASSWORD_STATE_LOC,INCORRECT_STATE_LOC,LOGGED_IN_STATE_LOC}}
 };
 
+/**
+ * Prompts the user for a username
+ * and proceeds unconditionally to
+ * the READ_USERNAME_STATE
+ *
+ * Initializes default system values
+ */
 uint8_t init_state(Sys* sys,uint8_t keypress)
 {
-    //setup(sys);
-    set_address_counter_4(0,0);
-    clear_display_4();
-    sys->current_user_index=0;
+    set_address_counter_4(0,0); // Write to the top left of the screen
+    clear_display_4(); // Clear any old data from LCD
+    write_string_4("EnterUser: "); // Write to LCD
+
+    sys->current_user_index=0; // Initialize default system values
     sys->letter_counter=0;
     sys->number_counter=0;
-    write_string_4("EnterUser: ");
 
-    return READ_USERNAME_STATE;
+    return READ_USERNAME_STATE; // Go to READ_USERNAME_STATE
 }
 
+/**
+ * Computes the equivalent value of base^exp
+ *
+ * Original source found here: https://stackoverflow.com/a/25525853
+ */
 uint32_t pow(uint8_t base, uint8_t exp)
 {
     uint32_t result = 1;
@@ -103,6 +141,11 @@ uint32_t pow(uint8_t base, uint8_t exp)
     return result;
 }
 
+/**
+ * Compares current username entry to values stored
+ * in the known usernames array to verify username's
+ * existence.
+ */
 uint8_t check_user_exists(Sys *sys)
 {
     uint8_t i;
@@ -117,7 +160,7 @@ uint8_t check_user_exists(Sys *sys)
             }
             if(j==3)
             {
-                sys->current_user_index = i;
+                sys->current_user_index = i; // Where to find current username in username array
                 return READ_PASSWORD_STATE; // Username match go to password state
             }
         }
@@ -125,22 +168,24 @@ uint8_t check_user_exists(Sys *sys)
     return INCORRECT_STATE; // If there is no username match go to incorrect username state
 }
 
+/**
+ * Functionality for handling username input
+ */
 uint8_t read_username_state(Sys *sys, uint8_t key_press)
 {
-    uint8_t curr_press = 0;
-    //uint8_t old_press = get_key_pressed();
+    uint8_t curr_press = 0; // Keeps track of which key has been pressed
 
-    //while( (curr_press=update_key_press(curr_press))== 0); //if the key is not the same one as before
     if(sys->letter_counter == 4) // Check to see if username exists if we get to the last letter
     {
-        sys->prev_state = READ_USERNAME_STATE;
-        sys->letter_counter = 0;
-        return check_user_exists(sys);  // Goes to password if user exits. Otherwise byebye
+        sys->prev_state = READ_USERNAME_STATE; // To remember where you came from in next state
+        sys->letter_counter = 0; // Reset letter counter to build future usernames
+        return check_user_exists(sys);  // Goes to password if user exits, otherwise to incorrect state
     }
-    curr_press=update_key_press(curr_press);
 
-    sys->prev_state = READ_USERNAME_STATE;
-    sys->curr_input = curr_press;
+    curr_press=update_key_press(curr_press); // Polls until new user input to keypad
+    sys->curr_input = curr_press; // Store the current input from the keypad
+
+    sys->prev_state = READ_USERNAME_STATE; // To remember where you came from in next state
 
 
     if(sys->curr_input != KEY_POUND && sys->curr_input != KEY_STAR && sys->curr_input != 0) // If key press is a number

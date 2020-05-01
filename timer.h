@@ -11,6 +11,7 @@
 #include "msp.h"
 
 #define FREQ_24_MHZ CS_CTL0_DCORSEL_4
+#define FREQ_1_5_MHZ CS_CTL0_DCORSEL_0
 
 void set_DCO(uint32_t selected_freq);
 void set_timer();

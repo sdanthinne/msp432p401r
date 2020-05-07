@@ -14,28 +14,21 @@ void main(void)
 
     setDCO(FREQ_1_5_MHz);
     set_SM_DCO();
-
-
     setup_SPI_b0();
 
-//    data = 0x3000;
-//    write_byte_b0(data>>8);
-//    write_byte_b0_cont(data);
-//	while(1)
+//    while(1)
 //	{
-//	    data = 0x3000 | (adder);
-//	    write_byte_b0(data>>8);
-//	    write_byte_b0_cont(data);
+//	    write_DAC(data);
 //	    if(adder>=0x1000)
 //	    {
 //	        adder=0;
 //	    }
 //	    adder*=2;
 //	}
-    //write_DAC(0xffff);
+    write_DAC(1000);
+
     while(1)
     {
-        write_DAC(0xffff);
+        write_DAC(1000);
     }
-    while(1);
 }

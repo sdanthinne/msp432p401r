@@ -15,5 +15,6 @@
 #define FREQ_24_MHz CS_CTL0_DCORSEL_4
 #define FREQ_48_MHz CS_CTL0_DCORSEL_5
 void setDCO(uint32_t freq);
+void set_SM_DCO();
 
 #endif /* DCO_H_ */

@@ -8,6 +8,7 @@
 #ifndef DAC_H_
 #define DAC_H_
 #include "spi.h"
+#include "DCO.h"
 
 void setup_DAC();
 void write_DAC(uint16_t bytes);

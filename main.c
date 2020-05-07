@@ -14,13 +14,14 @@ void main(void)
 
     uint16_t val=0;
     setup_DAC();
+    set_timer();
 
-    while(1)
-    {
-        write_DAC(wave[val]);
-        val++;
-        val = (val>511)? 0:val;
-        delay_us(1000);
-    }
+//    while(1)
+//    {
+//        write_DAC(wave[val]);
+//        val++;
+//        val = (val>511)? 0:val;
+//        delay_us(1000);
+//    }
 
 }

@@ -59,19 +59,24 @@ void write_byte_b0(uint8_t byte)
 
 /**
  * writes to the MCP4912
+ * since data is only 10 bits, we assume that only the lower 10 bits
+ * of bytes are used.
  */
 void write_DAC(uint16_t bytes)
 {
+    bytes = bytes & (0b1111111111);//select only the 10 bits
+
     //P4->OUT|=BIT2;//set ldac to high
     EUSCI_B0_SPI->IFG&=~BIT1;
 
     P4->OUT&=~BIT1;//set the cs to low
-    write_byte_b0((uint8_t)(0x30|((bytes>>7)&0xF)));//put the data into the txbuf with the correct settings
+
+    write_byte_b0(0x30|(bytes>>6));//put the data into the txbuf with the correct settings
 
     //while();
     //Problem: not finishing writing the above before getting to the rest
 
-    write_byte_b0((uint8_t)bytes);//write the next half of the byte
+    write_byte_b0((bytes<<2));//write the next half of the byte
     while((EUSCI_B0_SPI->STATW&EUSCI_B_STATW_SPI_BUSY));
     P4->OUT|=BIT1;//set cs high
 

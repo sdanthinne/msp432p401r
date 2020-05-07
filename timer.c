@@ -20,7 +20,7 @@ void set_DCO(uint32_t selected_freq)
     CS->KEY = 0; // Locks the CS again
 }
 
-void set_timer()
+void set_timer_square()
 {
     set_DCO(FREQ_1_5_MHZ);
 
@@ -51,7 +51,10 @@ void TA0_0_IRQHandler(void)
 // Timer A0's CCR1 interrupt service routine
 void TA0_N_IRQHandler(void)
 {
-    TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
-    write_DAC(310); // output low 2Vpp with 1V DC offset
-    TIMER_A0->CCR[1] += 3750;
+    if (TIMER_A0->IV == 2) // CCR1 source of interrupt
+    {
+        TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
+        write_DAC(310); // output low 2Vpp with 1V DC offset
+        TIMER_A0->CCR[1] += 3750;
+    }
 }

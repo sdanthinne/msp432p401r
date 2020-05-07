@@ -14,6 +14,6 @@
 #define FREQ_1_5_MHZ CS_CTL0_DCORSEL_0
 
 void set_DCO(uint32_t selected_freq);
-void set_timer();
+void set_timer_square();
 
 #endif /* TIMER_H_ */

@@ -14,7 +14,7 @@ void main(void)
 
     uint16_t val=0;
     setup_DAC();
-    set_timer();
+    set_timer_square();
     while(1);
 //    while(1)
 //    {

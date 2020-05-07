@@ -48,7 +48,7 @@ void write_SINE()
     uint16_t val=0;
     while(1)
     {
-        write_DAC(wave[val]);
+        write_DAC(hreswave[val]);
 
         val = (val+1)%100;
 

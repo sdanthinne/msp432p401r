@@ -19,8 +19,8 @@ void main(void)
     {
         write_DAC(wave[val]);
         val++;
-        val = (val>99)? 0:val;
-        delay_us(10000);
+        val = (val>511)? 0:val;
+        delay_us(1000);
     }
 
 }

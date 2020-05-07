@@ -30,8 +30,8 @@ void set_timer()
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
     TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enable
 
-    TIMER_A0->CCR[0] = 30000; // Takes 20 ms to accumulate
-    TIMER_A0->CCR[1] = 15000; // Takes 10 ms to accumulate
+    TIMER_A0->CCR[0] = 3750; // Takes 20 ms to accumulate
+    TIMER_A0->CCR[1] = 1875; // Takes 10 ms to accumulate
 
     __enable_irq(); // enable global interrupts
     NVIC->ISER[0] |= 1 << TA0_0_IRQn; // enable TimerA0's interrupts
@@ -45,7 +45,7 @@ void TA0_0_IRQHandler(void)
 
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
     write_DAC(930); // output high 2Vpp with 1V DC offset
-    TIMER_A0->CCR[0] += 30000;
+    TIMER_A0->CCR[0] += 3750;
 }
 
 // Timer A0's CCR1 interrupt service routine
@@ -53,5 +53,5 @@ void TA0_N_IRQHandler(void)
 {
     TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
     write_DAC(310); // output low 2Vpp with 1V DC offset
-    TIMER_A0->CCR[1] += 30000;
+    TIMER_A0->CCR[1] += 3750;
 }

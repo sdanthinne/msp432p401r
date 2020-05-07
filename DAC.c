@@ -13,7 +13,7 @@
  */
 void setup_DAC()
 {
-    setDCO(FREQ_6_MHz);
+    //setDCO(FREQ_6_MHz);
     set_SM_DCO();
     setup_SPI_b0();
     P4->OUT|=BIT1;//set cs high for default high
@@ -39,6 +39,7 @@ void write_DAC(uint16_t bytes)
     while((EUSCI_B0_SPI->STATW&EUSCI_B_STATW_SPI_BUSY));//wait for the entire signal to be written
 
     P4->OUT|=BIT1;//set cs high again after signal has been written
+    //delay_us(50);
 }
 
 /**

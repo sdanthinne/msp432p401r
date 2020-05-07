@@ -15,7 +15,7 @@ void main(void)
     uint16_t val=0;
     setup_DAC();
     set_timer();
-
+    while(1);
 //    while(1)
 //    {
 //        write_DAC(wave[val]);

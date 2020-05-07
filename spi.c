@@ -38,7 +38,8 @@ void setup_SPI_b0()
  */
 void write_byte_b0(uint8_t byte)
 {
-    while((EUSCI_B0_SPI->IFG&BIT1));//wait for the txbuf to be empty
+    //(EUSCI_B0_SPI->IFG&BIT1)
+    while((EUSCI_B0_SPI->STATW&EUSCI_B_STATW_SPI_BUSY));//wait for the txbuf to be empty
     EUSCI_B0_SPI -> TXBUF = byte; //put in the data
 }
 

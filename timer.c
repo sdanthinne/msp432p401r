@@ -20,29 +20,9 @@ void set_DCO(uint32_t selected_freq)
     CS->KEY = 0; // Locks the CS again
 }
 
-void set_timer_square()
-{
-    set_DCO(FREQ_1_5_MHZ);
-
-    TIMER_A0->CTL |= TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
-            TIMER_A_CTL_MC__CONTINUOUS; // sets timer to UP mode
-
-    TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
-    TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enable
-
-    TIMER_A0->CCR[0] = 3750; // Takes 20 ms to accumulate
-    TIMER_A0->CCR[1] = 1875; // Takes 10 ms to accumulate
-
-    __enable_irq(); // enable global interrupts
-    NVIC->ISER[0] |= 1 << TA0_0_IRQn; // enable TimerA0's interrupts
-    NVIC->ISER[0] |= 1 << TA0_N_IRQn; // enable TimerA1's interrupts
-
-}
-
 // Timer A0's CCR0 interrupt service routine
 void TA0_0_IRQHandler(void)
 {
-
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
     write_DAC(930); // output high 2Vpp with 1V DC offset
     TIMER_A0->CCR[0] += 3750;
@@ -51,10 +31,31 @@ void TA0_0_IRQHandler(void)
 // Timer A0's CCR1 interrupt service routine
 void TA0_N_IRQHandler(void)
 {
+    static uint16_t triangle_val = 1;
+    static uint8_t counting_up = 1;
+
     if (TIMER_A0->IV == 2) // CCR1 source of interrupt
     {
         TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
         write_DAC(310); // output low 2Vpp with 1V DC offset
         TIMER_A0->CCR[1] += 3750;
     }
+
+    if(TIMER_A0->IV == 4)       // If interrupt source is Timer A0 CCR2
+    {
+        if(triangle_val == 650)
+        {
+            counting_up = 0;
+        }
+        if(triangle_val == 0)
+        {
+            counting_up = 1;
+        }
+        counting_up ? (triangle_val++) : (triangle_val--);
+
+        TIMER_A0->CCTL[2] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
+        write_DAC(310+triangle_val); // output high 2Vpp with 1V DC offset
+        TIMER_A0->CCR[2] += 6;
+    }
+
 }

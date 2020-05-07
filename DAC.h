@@ -14,6 +14,7 @@
 void setup_DAC();
 void write_DAC(uint16_t bytes);
 void write_SINE();
+void write_TRIANGLE();
 
 static const uint16_t wave[512] =
      {

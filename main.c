@@ -14,7 +14,8 @@ void main(void)
 
     uint16_t val=0;
     setup_DAC();
-    set_timer_square();
+   // set_timer_square();
+    write_TRIANGLE();
     while(1);
 //    while(1)
 //    {

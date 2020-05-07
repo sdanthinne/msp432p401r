@@ -57,3 +57,39 @@ void write_SINE()
         delay_us(100);
     }
 }
+
+void write_TRIANGLE()
+{
+    set_DCO(FREQ_1_5_MHZ);
+
+    TIMER_A0->CTL |= TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
+            TIMER_A_CTL_MC__CONTINUOUS; // sets timer to UP mode
+
+    TIMER_A0->CCTL[2] = TIMER_A_CCTLN_CCIE; // TACCR2 interrupt enable
+
+    TIMER_A0->CCR[2] = 6; // Takes 10 ms to accumulate
+
+    __enable_irq(); // enable global interrupts
+    NVIC->ISER[0] |= (1 << TA0_0_IRQn); // enable TimerA0's interrupts
+    NVIC->ISER[0] |= 1 << TA0_N_IRQn; // enable TimerA1's interrupts
+
+}
+
+void set_timer_square()
+{
+    set_DCO(FREQ_1_5_MHZ);
+
+    TIMER_A0->CTL |= TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
+            TIMER_A_CTL_MC__CONTINUOUS; // sets timer to UP mode
+
+    TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
+    TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enable
+
+    TIMER_A0->CCR[0] = 3750; // Takes 20 ms to accumulate
+    TIMER_A0->CCR[1] = 1875; // Takes 10 ms to accumulate
+
+    __enable_irq(); // enable global interrupts
+    NVIC->ISER[0] |= 1 << TA0_0_IRQn; // enable TimerA0's interrupts
+    NVIC->ISER[0] |= 1 << TA0_N_IRQn; // enable TimerA1's interrupts
+
+}

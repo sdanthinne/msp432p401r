@@ -38,4 +38,5 @@ void main(void)
 //        write_DAC(data);
 //        data*=adder;
 //    }
+    while(1);
 }

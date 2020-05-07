@@ -40,10 +40,13 @@ void setup_SPI_b0()
     EUSCI_B0_SPI->CTLW0 &= ~(
             EUSCI_B_CTLW0_CKPL | //set to be active high
             EUSCI_B_CTLW0_SEVENBIT | //set to 8 bit mode
-            EUSCI_B_CTLW0_MODE0 //3 pin spi
+            EUSCI_B_CTLW0_MODE0 |//3 pin spi
+            EUSCI_B_CTLW0_SSEL0
             );
 
-    EUSCI_B0_SPI->CTLW0 &= ~BIT0;//this turned off the settings
+    EUSCI_B0_SPI->IFG &=~BIT1; //clear flags after hard reset
+
+    EUSCI_B0_SPI->CTLW0 &= ~BIT0;//re-enable data transmission
 }
 
 
@@ -59,7 +62,7 @@ void write_byte_b0(uint8_t byte)
 void write_DAC(uint16_t bytes)
 {
     write_byte_b0(0x3000|(bytes>>8));
-    while(~(EUSCI_B0_SPI->IFG & BIT1));
+    while(EUSCI_B0_SPI->STATW&BIT0);
     write_byte_b0_cont(0x3000|(bytes));
     while(EUSCI_B0_SPI->STATW&BIT0);
     P4->OUT|=BIT1;//set cs high

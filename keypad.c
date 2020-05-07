@@ -34,7 +34,8 @@ uint8_t get_key_pressed()
 {
     uint8_t i;
     uint8_t val;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         P5->OUT = (1 << i)|(P5->OUT&BIT3);                  //toggles the right ones on
         if ((P5->IN & (BIT4|  BIT5 | BIT6 | BIT7)) != 0)    //if the rows are not zero, if there is keypress
         {
@@ -74,22 +75,22 @@ uint8_t update_key_press(uint8_t prev_key)
 
     counter = 0;
     while(!false_button)
+    {
+        curr_key_check = get_key_pressed();
+        if( curr_key_check == 0)
         {
-            curr_key_check = get_key_pressed();
-            if( curr_key_check == 0)
-            {
-                counter++;
-            }
-            else
-            {
-                counter = 0;
-            }
-
-            if(counter > 150)
-            {
-                false_button = 1;
-            }
+            counter++;
         }
+        else
+        {
+            counter = 0;
+        }
+
+        if(counter > 150)
+        {
+            false_button = 1;
+        }
+    }
 
     return true_button;
 }
@@ -101,7 +102,8 @@ uint8_t update_key_press(uint8_t prev_key)
  */
 void write_key_to_LCD(uint8_t key)
 {
-    switch (key) {
+    switch (key)
+    {
         case KEY_ZERO:
             write_char_4(ZERO);
             break;
@@ -146,7 +148,8 @@ void write_key_to_LCD(uint8_t key)
 
 uint8_t get_number_pressed(uint8_t key)
 {
-    switch (key) {
+    switch (key)
+    {
         case KEY_ZERO:
             return 0;
         case KEY_ONE:

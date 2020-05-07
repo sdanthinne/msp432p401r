@@ -221,7 +221,8 @@ uint8_t process_number_state(Sys *sys, uint8_t key_press)
 
     write_key_to_LCD(sys->curr_input); // Write newest number to LCD
 
-    if (sys->prev_state == READ_USERNAME_STATE) {
+    if (sys->prev_state == READ_USERNAME_STATE)
+    {
 
         // Build up ASCII code for character
         uint8_t number_pressed = get_number_pressed(sys->curr_input);
@@ -443,8 +444,8 @@ void run_P1(void)
     delay_us(50000); //wait for a bit
     while(1)
     {
-            keypress = get_key_pressed();    //get ASCII of the key pressed
-            state_input = (curr_state->state_function)(&sys,keypress);//calls respective function to the state that we are in
-            curr_state = curr_state->next[state_input];//sets the next state based on the prev state
+        keypress = get_key_pressed();    //get ASCII of the key pressed
+        state_input = (curr_state->state_function)(&sys,keypress);//calls respective function to the state that we are in
+        curr_state = curr_state->next[state_input];//sets the next state based on the prev state
     }
 }

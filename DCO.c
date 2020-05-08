@@ -20,7 +20,7 @@ void setDCO(uint32_t freq)
 void set_SM_DCO()
 {
     CS->KEY=CS_KEY_VAL; // unlocks cs registers
-    CS->CTL1 |= CS_CTL1_SELS__DCOCLK |CS_CTL1_DIVS__8; // sets the MCLK to use DCO
+    CS->CTL1 |= CS_CTL1_SELS__DCOCLK; // sets the SMCLK to use DCO
     CS->KEY=0; //re-lock CS registers
 
 }

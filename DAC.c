@@ -14,7 +14,7 @@
  */
 void setup_DAC()
 {
-    //setDCO(FREQ_6_MHz);
+
     set_SM_DCO();
     setup_SPI_b0();
     P4->OUT|=BIT1;//set cs high for default high
@@ -29,8 +29,6 @@ void write_DAC(uint16_t bytes)
 {
     bytes = bytes & (0b1111111111);//select only the 10 bits
 
-//    EUSCI_B0_SPI->IFG&=~BIT1;//set the interrupt flag to low
-
     P4->OUT&=~BIT1;//set the cs to low
 
     write_byte_b0(0x70|(bytes>>6));//put the data into the txbuf with the correct settings
@@ -40,7 +38,7 @@ void write_DAC(uint16_t bytes)
     while((EUSCI_B0_SPI->STATW & EUSCI_B_STATW_SPI_BUSY));//wait for the entire signal to be written
 
     P4->OUT|=BIT1;//set cs high again after signal has been written
-    //delay_us(50);
+
 }
 
 /**
@@ -61,7 +59,7 @@ void write_SINE()
 
 void write_TRIANGLE()
 {
-    set_DCO(FREQ_1_5_MHZ);
+    set_DCO(FREQ_12_MHZ);
 
     TIMER_A0->EX0 &= ~(BIT0 | BIT1 | BIT2); // set clk divider to 1
     TIMER_A0->CTL &= ~(BIT6 | BIT7); // set clk divider to 1
@@ -81,7 +79,7 @@ void write_TRIANGLE()
 
 void set_timer_square()
 {
-    set_DCO(FREQ_1_5_MHZ);
+    set_DCO(FREQ_12_MHZ);
 
     TIMER_A0->CTL |= TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
             TIMER_A_CTL_MC__CONTINUOUS; // sets timer to continuous mode

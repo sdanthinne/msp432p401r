@@ -35,7 +35,13 @@ void TA0_N_IRQHandler(void)
     static uint16_t dac_in = LOW_VOLTAGE; // starting DAC input value
     static uint8_t counting_up = 1;
 
-    if(TIMER_A0->IV == 4)       // If interrupt source is Timer A0 CCR2
+    if (TIMER_A0->IV == 2) // If interrupt source is Timer A0 CCR1
+    {
+        write_DAC(LOW_VOLTAGE); // output low 2Vpp with 1V DC offset
+        TIMER_A0->CCR[1] += TWENTY_MS;
+    }
+
+    else if(TIMER_A0->IV == 4)       // If interrupt source is Timer A0 CCR2
     {
         TIMER_A0->CCR[2] += SAMPLE_INTERVAL; // Increment CCR value
 
@@ -49,12 +55,6 @@ void TA0_N_IRQHandler(void)
 
         counting_up ? (dac_in+=INCREMENT) : (dac_in-=INCREMENT);
         write_DAC(dac_in); // output high 2Vpp with 1V DC offset
-    }
-
-    else if (TIMER_A0->IV == 2) // If interrupt source is Timer A0 CCR1
-    {
-        write_DAC(LOW_VOLTAGE); // output low 2Vpp with 1V DC offset
-        TIMER_A0->CCR[1] += TWENTY_MS;
     }
 
 }

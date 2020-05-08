@@ -12,10 +12,11 @@ void main(void)
 
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD; // stop watchdog timer
 
-    uint16_t val=0;
+
+
     setup_DAC();
-   // set_timer_square();
-    write_TRIANGLE();
+    set_timer_square();
+//    write_TRIANGLE();
     while(1);
 //    while(1)
 //    {

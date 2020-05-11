@@ -7,7 +7,7 @@
  */
 
 /**
- * sets upthe spi interface with the board on eUSCI_B0
+ * sets up the spi interface with the board on eUSCI_B0
  */
 void setup_SPI_b0()
 {

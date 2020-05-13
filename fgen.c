@@ -33,10 +33,7 @@
  *IMPORTANT I think that interrupts from timer precede over port interrupts.
  */
 
-uint8_t wave_type;//the type of the wave - refer to macros
-uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
-uint16_t frequency;//the frequency of the output wave in Hz
-uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the DAC
+
 
 
 /**
@@ -89,8 +86,8 @@ uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
  */
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
 {
-    return square_wave[( (sq_count%(INTERRUPT_FREQUENCY/sq_frequency) )%          // Sq count modded by maximum square count allowed
-            ( (INTERRUPT_FREQUENCY/(sq_frequency*10)) *(sq_duty_cycle)))];     // Mod normalized square count by max count * duty cycle to see whether or not it is over the percentage
+    return square_wave[ (sq_count % (INTERRUPT_FREQUENCY/sq_frequency))     // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
+                        < ((INTERRUPT_FREQUENCY/(sq_frequency*10)) *(sq_duty_cycle))];   // checks to see if normalized square count is less than the maximum square count divided by duty cycle
 }
 
 /**

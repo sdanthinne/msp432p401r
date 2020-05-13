@@ -31,8 +31,12 @@ static const uint16_t square_wave[2] =
      0,930
 };
 
+uint8_t wave_type;//the type of the wave - refer to macros
+uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
+uint16_t frequency;//the frequency of the output wave in Hz
+uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the DAC
 
-static const uint16_t sine_wave_3v[515] =
+static const uint16_t sine_wave_3v[512] =
 {
  465,471,476,482,488,494,499,505,511,516,
  522,528,533,539,544,550,556,561,567,572,

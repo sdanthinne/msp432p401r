@@ -38,7 +38,7 @@
 uint8_t wave_type;//the type of the wave - refer to macros
 uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
 uint16_t frequency;//the frequency of the output wave in Hz
-uint8_t is_ready;//flag denoting when the mcu is ready to write a vvalue to the DAC
+uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the DAC
 
 
 /**
@@ -75,20 +75,25 @@ void setup_fg(void)
  * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
  * what makes the base wave 100MHz - currently incorrect
  */
-uint16_t get_sine(uint32_t count,uint16_t frequency)
+uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 {
-    return sine_wave_3v[(((uint16_t)(count*(100/19)))
-            *(frequency/100))//scale it by the frequency that we selected
+    return sine_wave_3v[(((uint16_t)(sin_count*(100/19)))
+            *(sin_frequency/100))//scale it by the frequency that we selected
                         %(sizeof(sine_wave_3v)/sizeof(uint16_t))];//mod by the number of elements in array
 }
 
 /**
  * returns the correct value for the square wave with duty cycle
- * TODO: needs to be implemented similarly to get_sine
  */
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
 {
-    return square_wave[(sq_count%(sizeof(square_wave)/sizeof(uint16_t)))];
+    return square_wave[( (sq_count%(INTERRUPT_FREQUENCY/sq_frequency) )%          // Sq count modded by maximum square count allowed
+            ( (INTERRUPT_FREQUENCY/(sq_frequency*10)) *(sq_duty_cycle)))];     // Mod normalized square count by max count * duty cycle to see whether or not it is over the percentage
+}
+
+uint16_t get_sawtooth(uint32_t saw_count, uint16_t saw_frequency)
+{
+    return (((saw_count*SAW_DIV)*(saw_frequency/100))%930);
 }
 
 /**
@@ -96,7 +101,7 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
  * set at the head of this file, this will return the correct
  * value for the count that we are at.
  * currently this case statement is a little slow. -
- * Very noticable in terms of waveform
+ * noticable in terms of waveform
  * if block is marginally faster
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
@@ -107,6 +112,9 @@ uint16_t get_value(uint32_t count,uint8_t wave_type)
     }else if(wave_type == SQUARE_WAVE)
     {
         return get_square(count, frequency,duty_cycle);
+    }else if(wave_type == SAWTOOTH_WAVE)
+    {
+        return get_sawtooth(count,frequency);
     }else
     {
         return get_sine(count,frequency);
@@ -117,6 +125,8 @@ uint16_t get_value(uint32_t count,uint8_t wave_type)
 //        return get_sine(count,frequency);
 //    case SQUARE_WAVE:
 //        return get_square(count, frequency,duty_cycle);
+//    case SAWTOOTH_WAVE:
+//        return get_sawtooth(count,frequency);
 //    default:
 //        return get_sine(count,frequency);
 //    }
@@ -131,12 +141,12 @@ void main_fg(void)
     uint32_t count = 0;
     //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
-    wave_type = SINE_WAVE;//select the default waveform to output
+    wave_type = SAWTOOTH_WAVE;//select the default waveform to output
     frequency = 100;//set the frequency
 
     while(1)
     {
-        value = get_value(count++,100);//get the value
+        value = get_value(count++,wave_type);//get the value
         while(!is_ready);//wait until the interrupt says to write a value
         write_DAC(value);//write the value
         is_ready = 0;//set our homemade flag to 0

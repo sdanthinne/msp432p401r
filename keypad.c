@@ -1,5 +1,5 @@
 #include "keypad.h"
-
+#include "fgen.h"
 /*
  * keypad.c
  *
@@ -207,7 +207,7 @@ void PORT5_IRQHandler(void)
         frequency = 400; // Set 400 Hz frequency
     case KEY_FIVE:
         frequency = 500; // Set 500 Hz frequency
-    case KEY_SIZE:
+    case KEY_SIX:
         wave_type = TRIANGLE_WAVE; // use triangle wave
     case KEY_SEVEN:
         wave_type = SQUARE_WAVE; // use square wave
@@ -220,14 +220,14 @@ void PORT5_IRQHandler(void)
             /* If wave is a square wave, decrease duty cycle by 10%
              * (use 10% as minimum)
              */
-            duty_cyle = (duty_cycle == 1) ? 1 : duty_cycle--;
+            duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle--;
         }
     case KEY_POUND:
         if (wave_type == SQUARE_WAVE) {
             /* If wave is a square wave, increase duty cycle by 10%
              * (use 90% as maximum)
              */
-            duty_cyle = (duty_cycle == 9) ? 9 : duty_cycle++;
+            duty_cycle = (duty_cycle == 9) ? 9 : duty_cycle++;
         }
     case KEY_ZERO:
         if (wave_type == SQUARE_WAVE) {
@@ -235,5 +235,4 @@ void PORT5_IRQHandler(void)
             duty_cycle = 5;
         }
     }
-
 }

@@ -33,10 +33,7 @@
  *IMPORTANT I think that interrupts from timer precede over port interrupts.
  */
 
-uint8_t wave_type;//the type of the wave - refer to macros
-uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
-uint16_t frequency;//the frequency of the output wave in Hz
-uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the DAC
+
 
 
 /**
@@ -47,14 +44,13 @@ uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the D
 void set_timer_fg(uint16_t time)
 {
     //do some calculation in here to determine what value to put into the CCR1
-    uint32_t beb = time*DCO_SPEED;//calculates the CCRO time that is required
 
     TIMER_A0->CTL |=
             TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
             TIMER_A_CTL_MC__CONTINUOUS; // sets timer to CONTINUOUS mode
 
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
-    TIMER_A0->CCR[0] = beb;
+    TIMER_A0->CCR[0] = time*DCO_SPEED;
     NVIC->ISER[0] = 1 << (TA0_0_IRQn&31);//enable interrupts for below routine
     NVIC->IP[2] |= BIT0; // assigns interrupt priority 1 (second highest) to TimerA0 in NVIC
     __enable_irq();
@@ -78,8 +74,9 @@ void setup_fg(void)
  */
 uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 {
-    return sine_wave_3v[(((uint16_t)(sin_count*(100/19)))
-            *(sin_frequency/100))//scale it by the frequency that we selected
+    float fl_count = sin_count;
+    return sine_wave_3v[((uint16_t)(((fl_count)*(SIN_TUNE))
+            *(sin_frequency/100)))//scale it by the frequency that we selected
                         %(sizeof(sine_wave_3v)/sizeof(uint16_t))];//mod by the number of elements in array
 }
 
@@ -88,13 +85,16 @@ uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
  */
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
 {
-    return square_wave[( (sq_count%(INTERRUPT_FREQUENCY/sq_frequency) )%          // Sq count modded by maximum square count allowed
-            ( (INTERRUPT_FREQUENCY/(sq_frequency*10)) *(sq_duty_cycle)))];     // Mod normalized square count by max count * duty cycle to see whether or not it is over the percentage
+    return square_wave[ (sq_count % (INTERRUPT_FREQUENCY/sq_frequency))     // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
+                        < ((INTERRUPT_FREQUENCY/(sq_frequency)+1) *(sq_duty_cycle)/10)];   // checks to see if normalized square count is less than the maximum square count divided by duty cycle
 }
 
+/**
+ * generates a sawtooth wave based on the counter
+ */
 uint16_t get_sawtooth(uint32_t saw_count, uint16_t saw_frequency)
 {
-    return (((saw_count*SAW_DIV)*(saw_frequency/100))%930);
+    return (((saw_count*SAW_TUNE)*(saw_frequency/100))%930);
 }
 
 /**
@@ -142,8 +142,9 @@ void main_fg(void)
     uint32_t count = 0;
     //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
-    wave_type = SAWTOOTH_WAVE;//select the default waveform to output
-    frequency = 100;//set the frequency
+    wave_type = SQUARE_WAVE;//select the default waveform to output
+    duty_cycle = 9;
+    frequency = 500;//set the frequency
 
     while(1)
     {

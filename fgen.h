@@ -11,9 +11,12 @@
 #define SAMPLE_TIME (MIN_OUT_RATE + TIME_MARGIN)
 #define TIME_MARGIN 63 //TODO: some margin of time to allow for errors. (in us) (currently experimentally set)
 #define DCO_SPEED 24
-#define SAW_DIV (20/4)
-#define INTERRUPT_FREQUENCY 100 //undefined currently
-#define MAX_SQUARE_COUNT 3412 //undefined currently
+
+#define SAW_TUNE (20/4)
+#define SIN_TUNE (1325/700)
+
+#define INTERRUPT_FREQUENCY 24600
+#define MAX_SQUARE_COUNT 3412
 
 //types of waves that the wave gen supports.
 #define SQUARE_WAVE 1
@@ -28,6 +31,10 @@ static const uint16_t square_wave[2] =
      0,930
 };
 
+uint8_t wave_type;//the type of the wave - refer to macros
+uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
+uint16_t frequency;//the frequency of the output wave in Hz
+uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the DAC
 
 static const uint16_t sine_wave_3v[512] =
 {

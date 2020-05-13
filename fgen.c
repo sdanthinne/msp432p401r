@@ -31,6 +31,8 @@
  *IMPORTANT when getting the settings from the ISR with the keypad, we should maybe
  *IMPORTANT stop the interrupts of the DAC output? Might help with interrupt priority
  *IMPORTANT I think that interrupts from timer precede over port interrupts.
+ *IMPORTANT
+ *IMPORTANT Look into buffered mode for DAC to maybe help reduce noise
  */
 
 uint8_t wave_type;//the type of the wave - refer to macros
@@ -46,15 +48,13 @@ uint8_t is_ready;//flag denoting when the mcu is ready to write a vvalue to the 
  */
 void set_timer_fg(uint16_t time)
 {
-    //do some calculation in here to determine what value to put into the CCR1
-    uint32_t beb = time*DCO_SPEED;//calculates the CCRO time that is required
 
     TIMER_A0->CTL |=
             TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
             TIMER_A_CTL_MC__CONTINUOUS; // sets timer to CONTINUOUS mode
 
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
-    TIMER_A0->CCR[0] = beb;
+    TIMER_A0->CCR[0] = time*DCO_SPEED; // calculates the CCR0 time that is required
     NVIC->ISER[0] = 1 << (TA0_0_IRQn&31);//enable interrupts for below routine
     __enable_irq();
 }

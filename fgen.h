@@ -15,8 +15,8 @@
 #define SAW_TUNE (20/4)
 #define SIN_TUNE (1325/700)
 
-#define INTERRUPT_FREQUENCY 100 //undefined currently
-#define MAX_SQUARE_COUNT 3412 //undefined currently
+#define INTERRUPT_FREQUENCY 24600
+#define MAX_SQUARE_COUNT 3412
 
 //types of waves that the wave gen supports.
 #define SQUARE_WAVE 1

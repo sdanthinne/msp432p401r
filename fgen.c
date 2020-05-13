@@ -44,14 +44,13 @@
 void set_timer_fg(uint16_t time)
 {
     //do some calculation in here to determine what value to put into the CCR1
-    uint32_t beb = time*DCO_SPEED;//calculates the CCRO time that is required
 
     TIMER_A0->CTL |=
             TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
             TIMER_A_CTL_MC__CONTINUOUS; // sets timer to CONTINUOUS mode
 
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
-    TIMER_A0->CCR[0] = beb;
+    TIMER_A0->CCR[0] = time*DCO_SPEED;
     NVIC->ISER[0] = 1 << (TA0_0_IRQn&31);//enable interrupts for below routine
     __enable_irq();
 }
@@ -76,7 +75,6 @@ uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 {
     float fl_count = sin_count;
     return sine_wave_3v[((uint16_t)(((fl_count)*(SIN_TUNE))
-
             *(sin_frequency/100)))//scale it by the frequency that we selected
                         %(sizeof(sine_wave_3v)/sizeof(uint16_t))];//mod by the number of elements in array
 }
@@ -87,7 +85,7 @@ uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
 {
     return square_wave[ (sq_count % (INTERRUPT_FREQUENCY/sq_frequency))     // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
-                        < ((INTERRUPT_FREQUENCY/(sq_frequency*10)) *(sq_duty_cycle))];   // checks to see if normalized square count is less than the maximum square count divided by duty cycle
+                        < ((INTERRUPT_FREQUENCY/(sq_frequency)+1) *(sq_duty_cycle)/10)];   // checks to see if normalized square count is less than the maximum square count divided by duty cycle
 }
 
 /**
@@ -143,8 +141,9 @@ void main_fg(void)
     uint32_t count = 0;
     //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
-    wave_type = SINE_WAVE;//select the default waveform to output
-    frequency = 100;//set the frequency
+    wave_type = SQUARE_WAVE;//select the default waveform to output
+    duty_cycle = 9;
+    frequency = 500;//set the frequency
 
     while(1)
     {

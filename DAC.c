@@ -44,18 +44,18 @@ void write_DAC(uint16_t bytes)
 /**
  * currently only writes a "unit sine" wave. some math required to make it better
  */
-void write_SINE()
-{
-    uint16_t val=0;
-    while(1)
-    {
-        write_DAC(wave[val]);
-
-        val = (val+1)%100;
-
-        delay_us(100);
-    }
-}
+//void write_SINE()
+//{
+//    uint16_t val=0;
+//    while(1)
+//    {
+//        write_DAC(wave[val]);
+//
+//        val = (val+1)%100;
+//
+//        delay_us(100);
+//    }
+//}
 
 void write_TRIANGLE()
 {

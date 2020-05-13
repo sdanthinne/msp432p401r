@@ -50,7 +50,7 @@ float get_DCO_speed()
         break;
 
     default:
-        dcoVal = -1;
+        dcoVal = 0;
         break;
     }
     return dcoVal;

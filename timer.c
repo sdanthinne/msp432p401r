@@ -21,12 +21,12 @@ void set_DCO(uint32_t selected_freq)
 }
 
 // Timer A0's CCR0 interrupt service routine
-void TA0_0_IRQHandler(void)
-{
-    TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
-    write_DAC(HIGH_VOLTAGE); // output high 2Vpp with 1V DC offset
-    TIMER_A0->CCR[0] += TWENTY_MS;
-}
+//void TA0_0_IRQHandler(void)
+//{
+//    TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clears capture/compare interrupt flag
+//    write_DAC(HIGH_VOLTAGE); // output high 2Vpp with 1V DC offset
+//    TIMER_A0->CCR[0] += TWENTY_MS;
+//}
 
 // Timer A0's CCR1 and CCR2 interrupt service routine
 //currently has too much logic.

@@ -15,6 +15,47 @@ void setDCO(uint32_t freq)
 }
 
 /**
+ * returns the value of the DCO
+ * in MHz
+ */
+float get_DCO_speed()
+{
+    uint32_t dcoVal;
+    CS->KEY=CS_KEY_VAL;
+
+    switch(CS->CTL0&CS_CTL0_DCORSEL_MASK)
+    {
+    case FREQ_1_5_MHz:
+        dcoVal = 1.5;
+        break;
+
+    case FREQ_3_MHz:
+        dcoVal = 3;
+        break;
+
+    case FREQ_6_MHz:
+        dcoVal = 6;
+        break;
+
+    case FREQ_12_MHz:
+        dcoVal = 12;
+        break;
+
+    case FREQ_24_MHz:
+        dcoVal = 24;
+        break;
+
+    case FREQ_48_MHz:
+        dcoVal = 48;
+        break;
+
+    default:
+        dcoVal = -1;
+        break;
+    }
+    return dcoVal;
+}
+/**
  * sets the smclk to source from the DCO
  */
 void set_SM_DCO()

@@ -27,12 +27,16 @@
  * Amplitude:
  *  between 0 and 931 (0-3)V
  *
+ *
+ *IMPORTANT when getting the settings from the ISR with the keypad, we should maybe
+ *IMPORTANT stop the interrupts of the DAC output? Might help with interrupt priority
+ *IMPORTANT I think that interrupts from timer precede over port interrupts.
  */
 
 uint8_t wave_type;//the type of the wave - refer to macros
 uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
 uint16_t frequency;//the frequency of the output wave in Hz
-uint8_t is_ready;
+uint8_t is_ready;//flag denoting when the mcu is ready to write a vvalue to the DAC
 
 
 /**
@@ -56,29 +60,32 @@ void set_timer_fg(uint16_t time)
 }
 
 /**
- * TODO: enable interrupts - set the CCR to the correct time
+ * sets up the function generator for use
  */
 void setup_fg(void)
 {
-    setDCO(FREQ_24_MHz);
+    setDCO(FREQ_24_MHz);//we want the highest to get the best output
     set_timer_fg(SAMPLE_TIME);//setup the timer to interrupt every SAMPLE_TIME
     setup_DAC();
-    is_ready = 0;
-
+    is_ready = 0;//initialize the flag to zero
 }
 
 /**
  * returns the value of the sine wave at count
  * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
- * what makes the base wave 100MHz
+ * what makes the base wave 100MHz - currently incorrect
  */
 uint16_t get_sine(uint32_t count,uint16_t frequency)
 {
     return sine_wave_3v[(((uint16_t)(count*(100/19)))
-            *(frequency/100))
+            *(frequency/100))//scale it by the frequency that we selected
                         %(sizeof(sine_wave_3v)/sizeof(uint16_t))];//mod by the number of elements in array
 }
 
+/**
+ * returns the correct value for the square wave with duty cycle
+ * TODO: needs to be implemented similarly to get_sine
+ */
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
 {
     return square_wave[(sq_count%(sizeof(square_wave)/sizeof(uint16_t)))];
@@ -88,18 +95,31 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
  * using function pointers - probably not and the global variables that are
  * set at the head of this file, this will return the correct
  * value for the count that we are at.
+ * currently this case statement is a little slow. -
+ * Very noticable in terms of waveform
+ * if block is marginally faster
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
 {
-    switch(wave_type)
+    if(wave_type == SINE_WAVE)
     {
-    case SINE_WAVE:
         return get_sine(count,frequency);
-    case SQUARE_WAVE:
+    }else if(wave_type == SQUARE_WAVE)
+    {
         return get_square(count, frequency,duty_cycle);
-    default:
+    }else
+    {
         return get_sine(count,frequency);
     }
+//    switch(wave_type)
+//    {
+//    case SINE_WAVE:
+//        return get_sine(count,frequency);
+//    case SQUARE_WAVE:
+//        return get_square(count, frequency,duty_cycle);
+//    default:
+//        return get_sine(count,frequency);
+//    }
 }
 
 /**
@@ -107,18 +127,19 @@ uint16_t get_value(uint32_t count,uint8_t wave_type)
  */
 void main_fg(void)
 {
-    P6->DIR|=BIT0;
-    setup_fg();
-    wave_type = SINE_WAVE;
-    frequency = 100;
     uint16_t value = 0;
     uint32_t count = 0;
+    //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
+    setup_fg();//run setup
+    wave_type = SINE_WAVE;//select the default waveform to output
+    frequency = 100;//set the frequency
+
     while(1)
     {
-        while(!is_ready);
-        value = get_sine(count++,100);
-        write_DAC(value);
-        is_ready = 0;
+        value = get_value(count++,100);//get the value
+        while(!is_ready);//wait until the interrupt says to write a value
+        write_DAC(value);//write the value
+        is_ready = 0;//set our homemade flag to 0
     }
 }
 
@@ -127,7 +148,7 @@ void main_fg(void)
  */
 void TA0_0_IRQHandler(void)
 {
-    P6->OUT^=BIT0;
+    //P6->OUT^=BIT0;//WARNING: ADDING THIS LINE SIGNIFICANTLY INCREASES PERIOD
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;//clear flag
     is_ready = 1;
     TIMER_A0->CCR[0]+=SAMPLE_TIME;//go for next sample time

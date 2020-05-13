@@ -77,8 +77,10 @@ void setup_fg(void)
  */
 uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 {
-    return sine_wave_3v[(((uint16_t)(sin_count*(100/19)))
-            *(sin_frequency/100))//scale it by the frequency that we selected
+    float fl_count = sin_count;
+    return sine_wave_3v[((uint16_t)(((fl_count)*(SIN_TUNE))
+
+            *(sin_frequency/100)))//scale it by the frequency that we selected
                         %(sizeof(sine_wave_3v)/sizeof(uint16_t))];//mod by the number of elements in array
 }
 
@@ -91,9 +93,12 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
             ( (INTERRUPT_FREQUENCY/(sq_frequency*10)) *(sq_duty_cycle)))];     // Mod normalized square count by max count * duty cycle to see whether or not it is over the percentage
 }
 
+/**
+ * generates a sawtooth wave based on the counter
+ */
 uint16_t get_sawtooth(uint32_t saw_count, uint16_t saw_frequency)
 {
-    return (((saw_count*SAW_DIV)*(saw_frequency/100))%930);
+    return (((saw_count*SAW_TUNE)*(saw_frequency/100))%930);
 }
 
 /**
@@ -141,7 +146,7 @@ void main_fg(void)
     uint32_t count = 0;
     //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
-    wave_type = SAWTOOTH_WAVE;//select the default waveform to output
+    wave_type = SINE_WAVE;//select the default waveform to output
     frequency = 100;//set the frequency
 
     while(1)

@@ -11,7 +11,10 @@
 #define SAMPLE_TIME (MIN_OUT_RATE + TIME_MARGIN)
 #define TIME_MARGIN 63 //TODO: some margin of time to allow for errors. (in us) (currently experimentally set)
 #define DCO_SPEED 24
-#define SAW_DIV (20/4)
+
+#define SAW_TUNE (20/4)
+#define SIN_TUNE (1325/700)
+
 #define INTERRUPT_FREQUENCY 100 //undefined currently
 #define MAX_SQUARE_COUNT 3412 //undefined currently
 
@@ -29,7 +32,7 @@ static const uint16_t square_wave[2] =
 };
 
 
-static const uint16_t sine_wave_3v[512] =
+static const uint16_t sine_wave_3v[515] =
 {
  465,471,476,482,488,494,499,505,511,516,
  522,528,533,539,544,550,556,561,567,572,

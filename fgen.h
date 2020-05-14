@@ -16,14 +16,14 @@
 
 #define SIN_TUNE (1325/700)
 
-#define INTERRUPT_FREQUENCY 75400
+#define INTERRUPT_FREQUENCY 67000
 #define MAX_SQUARE_COUNT 3412
 
 //types of waves that the wave gen supports.
 #define SQUARE_WAVE 1
 #define SAWTOOTH_WAVE 4
 #define SINE_WAVE 8
-#define TRIANGLE_WAVE 0
+#define TRIANGLE_WAVE 2
 
 void main_fg(void);
 
@@ -36,6 +36,7 @@ uint8_t wave_type;//the type of the wave - refer to macros
 uint8_t duty_cycle;//duty cycle of square wave (1-9 -> 10%->90%)
 uint16_t frequency;//the frequency of the output wave in Hz
 uint8_t is_ready;//flag denoting when the mcu is ready to write a value to the DAC
+uint8_t wave_count;
 
 static const uint16_t sine_wave_3v[512] =
 {

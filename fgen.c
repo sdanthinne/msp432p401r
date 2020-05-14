@@ -124,26 +124,25 @@ uint16_t get_sawtooth(uint32_t tri_count,uint16_t tri_frequency)
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
 {
-    //uint16_t out_value = 0;
+    uint16_t out_value = 0;
 
-    if(wave_type == SQUARE_WAVE)
+    if(wave_type & SQUARE_WAVE)
     {
-        return get_square(count, frequency,duty_cycle);
-    }else if(wave_type == SAWTOOTH_WAVE)
-    {
-        return get_sawtooth(count,frequency);
-    }else if(wave_type == SINE_WAVE)
-    {
-        return get_sine(count,frequency);
-    }else if(wave_type == TRIANGLE_WAVE)
-    {
-        return get_triangle(count,frequency);
-    }else
-    {
-        return get_sine(count,frequency);
-
+        out_value+= get_square(count, frequency,duty_cycle);
     }
-    //return out_value;
+    if(wave_type & SAWTOOTH_WAVE)
+    {
+        out_value+= get_sawtooth(count,frequency);
+    }
+    if(wave_type & SINE_WAVE)
+    {
+        out_value+= get_sine(count,frequency);
+    }
+    if(wave_type & TRIANGLE_WAVE)
+    {
+        out_value+= get_triangle(count,frequency);
+    }
+    return out_value/wave_count;
 //    switch(wave_type)
 //    {
 //    case SINE_WAVE:
@@ -164,9 +163,11 @@ void main_fg(void)
 {
     uint16_t value = 0;
     uint32_t count = 0;
+
     P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
     wave_type = SQUARE_WAVE;//select the default waveform to output
+    wave_count = 1;
     duty_cycle = 9;
     frequency = 100;//set the frequency
 

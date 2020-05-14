@@ -26,6 +26,7 @@ void setup_keypad()
     // Set interrupt priority of P5 to 0 (highest)
     NVIC->IP[9] &= ~(BIT(31) | BIT(30) | BIT(29) | BIT(28) |
                      BIT(27) | BIT(26) | BIT(25) | BIT(24));
+    P5->OUT|=(BIT0|BIT1|BIT2);
 }
 
 /**
@@ -189,12 +190,11 @@ void PORT5_IRQHandler(void)
 {
     uint8_t key_press = 0; // initially, we have no key press
     uint8_t key_val;
-    P5->IFG &= ~(BIT4 | BIT5 | BIT6 | BIT7); // clear the interrupt flags
 
-
+    P6->OUT^=BIT0;
     key_press = update_key_press(key_press); // get new key pressed
     key_val = get_number_pressed(key_press); // get value of the key pressed
-
+    P6->OUT^=BIT0;
     switch(key_press)
     {
         case KEY_ONE:
@@ -250,4 +250,6 @@ void PORT5_IRQHandler(void)
             }
             break;
     }
+    P5->IFG &= ~(BIT4 | BIT5 | BIT6 | BIT7); // clear the interrupt flags
+
 }

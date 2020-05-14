@@ -2,7 +2,7 @@
 #include "DCO.h"
 #include "DAC.h"
 #include "delay.h"
-
+#include "fgen.h"
 
 /**
  * main.c

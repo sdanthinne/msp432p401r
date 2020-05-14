@@ -23,6 +23,9 @@ void setup_keypad()
     // Enable Port 5 on NVIC
     NVIC->ISER[1] = 1 << (31 & (PORT5_IRQn));
 
+    // Set interrupt priority of P5 to 0 (highest)
+    NVIC->IP[9] &= ~(BIT(31) | BIT(30) | BIT(29) | BIT(28) |
+                     BIT(27) | BIT(26) | BIT(25) | BIT(24));
 }
 
 /**

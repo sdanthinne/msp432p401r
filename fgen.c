@@ -52,6 +52,7 @@ void set_timer_fg(uint16_t time)
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
     TIMER_A0->CCR[0] = time*DCO_SPEED;
     NVIC->ISER[0] = 1 << (TA0_0_IRQn&31);//enable interrupts for below routine
+    NVIC->IP[2] |= BIT0; // assigns interrupt priority 1 (second highest) to TimerA0 in NVIC
     __enable_irq();
 }
 

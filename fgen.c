@@ -64,6 +64,7 @@ void setup_fg(void)
     setDCO(FREQ_24_MHz);//we want the highest to get the best output
     set_timer_fg(SAMPLE_TIME);//setup the timer to interrupt every SAMPLE_TIME
     setup_DAC();
+    setup_keypad();
     is_ready = 0;//initialize the flag to zero
 }
 

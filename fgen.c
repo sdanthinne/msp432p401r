@@ -44,7 +44,6 @@
 void set_timer_fg(uint16_t time)
 {
     //do some calculation in here to determine what value to put into the CCR1
-
     TIMER_A0->CTL |=
             TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
             TIMER_A_CTL_MC__CONTINUOUS; // sets timer to CONTINUOUS mode
@@ -75,15 +74,10 @@ void setup_fg(void)
  */
 uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 {
-    //P6->OUT|=BIT0;
     uint16_t max_count = (INTERRUPT_FREQUENCY / sin_frequency);
     uint16_t normalized_count = sin_count % max_count;
     uint16_t array_val = (512 * normalized_count) / (max_count);
-    //delay_us(100);
-
-
     return sine_wave_3v[array_val];
-
 }
 
 /**
@@ -96,13 +90,28 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
 }
 
 /**
+ * returns the value of the sine wave at count
+ * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
+ * what makes the base wave 100MHz - currently incorrect
+ */
+uint16_t get_triangle(uint32_t tri_count,uint16_t tri_frequency)
+{
+    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
+    uint16_t normalized_count = tri_count % max_count;
+    uint16_t array_val = (512 * normalized_count) / (max_count);
+    return triangle_wave_3v[array_val];
+}
+
+
+/**
  * generates a sawtooth wave based on the counter
  */
-uint16_t get_sawtooth(uint32_t saw_count, uint16_t saw_frequency)
+uint16_t get_sawtooth(uint32_t tri_count,uint16_t tri_frequency)
 {
-    return ((((saw_count*400))/114
-            *(saw_frequency/100))
-            %930);
+    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
+    uint16_t normalized_count = tri_count % max_count;
+    uint16_t saw_val = (930 * normalized_count) / (max_count);
+    return saw_val;
 }
 
 /**
@@ -115,19 +124,26 @@ uint16_t get_sawtooth(uint32_t saw_count, uint16_t saw_frequency)
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
 {
-    if(wave_type == SINE_WAVE)
-    {
-        return get_sine(count,frequency);
-    }else if(wave_type == SQUARE_WAVE)
+    //uint16_t out_value = 0;
+
+    if(wave_type == SQUARE_WAVE)
     {
         return get_square(count, frequency,duty_cycle);
     }else if(wave_type == SAWTOOTH_WAVE)
     {
         return get_sawtooth(count,frequency);
+    }else if(wave_type == SINE_WAVE)
+    {
+        return get_sine(count,frequency);
+    }else if(wave_type == TRIANGLE_WAVE)
+    {
+        return get_triangle(count,frequency);
     }else
     {
         return get_sine(count,frequency);
+
     }
+    //return out_value;
 //    switch(wave_type)
 //    {
 //    case SINE_WAVE:
@@ -172,5 +188,5 @@ void TA0_0_IRQHandler(void)
     //P6->OUT^=BIT0;//WARNING: ADDING THIS LINE SIGNIFICANTLY INCREASES PERIOD
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;//clear flag
     is_ready = 1;
-    TIMER_A0->CCR[0]+=SAMPLE_TIME;//go for next sample time
+    TIMER_A0->CCR[0]+=320;//go for next sample time
 }

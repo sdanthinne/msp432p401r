@@ -16,13 +16,13 @@
 
 #define SIN_TUNE (1325/700)
 
-#define INTERRUPT_FREQUENCY 24600
+#define INTERRUPT_FREQUENCY 75400
 #define MAX_SQUARE_COUNT 3412
 
 //types of waves that the wave gen supports.
 #define SQUARE_WAVE 1
-#define SAWTOOTH_WAVE 2
-#define SINE_WAVE 3
+#define SAWTOOTH_WAVE 4
+#define SINE_WAVE 8
 #define TRIANGLE_WAVE 0
 
 void main_fg(void);
@@ -92,7 +92,7 @@ static const uint16_t sine_wave_3v[512] =
  397,402,408,414,419,425,431,436,442,448,
  454,459,465
 };
-static const uint16_t triangle_wave_v3 = {
+static const uint16_t triangle_wave_3v[512] = {
     4,7,11,15,18,22,25,29,33,36,
     40,44,47,51,54,58,62,65,69,73,
     76,80,84,87,91,94,98,102,105,109,

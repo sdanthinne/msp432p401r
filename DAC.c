@@ -1,4 +1,5 @@
 #include "DAC.h"
+#include "DCO.h"
 #include "delay.h"
 /*
  * DAC.c
@@ -38,63 +39,5 @@ void write_DAC(uint16_t bytes)
     while((EUSCI_B0_SPI->STATW & EUSCI_B_STATW_SPI_BUSY));//wait for the entire signal to be written
 
     P4->OUT|=BIT1;//set cs high again after signal has been written
-
-}
-
-/**
- * currently only writes a "unit sine" wave. some math required to make it better
- */
-//void write_SINE()
-//{
-//    uint16_t val=0;
-//    while(1)
-//    {
-//        write_DAC(wave[val]);
-//
-//        val = (val+1)%100;
-//
-//        delay_us(100);
-//    }
-//}
-
-void write_TRIANGLE()
-{
-    set_DCO(FREQ_12_MHZ);
-
-    TIMER_A0->EX0 &= ~(BIT0 | BIT1 | BIT2); // set clk divider to 1
-    TIMER_A0->CTL &= ~(BIT6 | BIT7); // set clk divider to 1
-
-    TIMER_A0->CTL |= TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
-            TIMER_A_CTL_MC__CONTINUOUS; // sets timer to continuous mode
-
-    TIMER_A0->CCTL[2] = TIMER_A_CCTLN_CCIE; // TACCR2 interrupt enable
-
-    TIMER_A0->CCR[2] = 0; // Takes 10 ms to accumulate
-
-    __enable_irq(); // enable global interrupts
-    NVIC->ISER[0] |= (1 << TA0_0_IRQn); // enable TimerA0's interrupts
-    NVIC->ISER[0] |= 1 << TA0_N_IRQn; // enable TimerA1's interrupts
-
-}
-
-void set_timer_square()
-{
-    set_DCO(FREQ_12_MHZ);
-
-    TIMER_A0->CTL |= TIMER_A_CTL_SSEL__SMCLK | // sets timer's source as SMCLK
-            TIMER_A_CTL_MC__CONTINUOUS; // sets timer to continuous mode
-
-    TIMER_A0->EX0 &= ~(BIT0 | BIT1 | BIT2); // set clk divider to 1
-    TIMER_A0->CTL &= ~(BIT6 | BIT7); // set clk divider to 1
-
-    TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
-    TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enable
-
-    TIMER_A0->CCR[0] = TWENTY_MS; // Takes 20 ms to accumulate
-    TIMER_A0->CCR[1] = TEN_MS; // Takes 10 ms to accumulate
-
-    __enable_irq(); // enable global interrupts
-    NVIC->ISER[0] |= 1 << TA0_0_IRQn; // enable TimerA0's interrupts
-    NVIC->ISER[0] |= 1 << TA0_N_IRQn; // enable TimerA1's interrupts
 
 }

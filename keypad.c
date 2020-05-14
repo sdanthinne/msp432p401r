@@ -187,7 +187,7 @@ uint8_t get_number_pressed(uint8_t key)
 
 void PORT5_IRQHandler(void)
 {
-    static uint8_t key_press = 0; // intially, we have no key press
+    uint8_t key_press = 0; // initially, we have no key press
     uint8_t key_val;
     P5->IFG &= ~(BIT4 | BIT5 | BIT6 | BIT7); // clear the interrupt flags
 
@@ -195,44 +195,59 @@ void PORT5_IRQHandler(void)
     key_press = update_key_press(key_press); // get new key pressed
     key_val = get_number_pressed(key_press); // get value of the key pressed
 
-    switch(key_val)
+    switch(key_press)
     {
-    case KEY_ONE:
-        frequency = 100; // Set 100 Hz frequency
-    case KEY_TWO:
-        frequency = 200; // Set 200 Hz frequency
-    case KEY_THREE:
-        frequency = 300; // Set 300 Hz frequency
-    case KEY_FOUR:
-        frequency = 400; // Set 400 Hz frequency
-    case KEY_FIVE:
-        frequency = 500; // Set 500 Hz frequency
-    case KEY_SIX:
-        wave_type = TRIANGLE_WAVE; // use triangle wave
-    case KEY_SEVEN:
-        wave_type = SQUARE_WAVE; // use square wave
-    case KEY_EIGHT:
-        wave_type = SINE_WAVE; // use sine wave
-    case KEY_NINE:
-        frequency = SAWTOOTH_WAVE; // use sawtooth wave
-    case KEY_STAR:
-        if (wave_type == SQUARE_WAVE) {
-            /* If wave is a square wave, decrease duty cycle by 10%
-             * (use 10% as minimum)
-             */
-            duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle--;
-        }
-    case KEY_POUND:
-        if (wave_type == SQUARE_WAVE) {
-            /* If wave is a square wave, increase duty cycle by 10%
-             * (use 90% as maximum)
-             */
-            duty_cycle = (duty_cycle == 9) ? 9 : duty_cycle++;
-        }
-    case KEY_ZERO:
-        if (wave_type == SQUARE_WAVE) {
-            // If wave is a square wave, reset duty cycle to 50%
-            duty_cycle = 5;
-        }
+        case KEY_ONE:
+            frequency = 100; // Set 100 Hz frequency
+            break;
+        case KEY_TWO:
+            frequency = 200; // Set 200 Hz frequency
+            break;
+        case KEY_THREE:
+            frequency = 300; // Set 300 Hz frequency
+            break;
+        case KEY_FOUR:
+            frequency = 400; // Set 400 Hz frequency
+            break;
+        case KEY_FIVE:
+            frequency = 500; // Set 500 Hz frequency
+            break;
+        case KEY_SIX:
+            wave_type = TRIANGLE_WAVE; // use triangle wave
+            break;
+        case KEY_SEVEN:
+            wave_type = SQUARE_WAVE; // use square wave
+            break;
+        case KEY_EIGHT:
+            wave_type = SINE_WAVE; // use sine wave
+            break;
+        case KEY_NINE:
+            wave_type = SAWTOOTH_WAVE; // use sawtooth wave
+            break;
+        case KEY_STAR:
+            if (wave_type == SQUARE_WAVE)
+            {
+                /* If wave is a square wave, decrease duty cycle by 10%
+                 * (use 10% as minimum)
+                 */
+                duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle--;
+            }
+            break;
+        case KEY_POUND:
+            if (wave_type == SQUARE_WAVE)
+            {
+                /* If wave is a square wave, increase duty cycle by 10%
+                 * (use 90% as maximum)
+                 */
+                duty_cycle = (duty_cycle == 9) ? 9 : duty_cycle++;
+            }
+            break;
+        case KEY_ZERO:
+            if (wave_type == SQUARE_WAVE)
+            {
+                // If wave is a square wave, reset duty cycle to 50%
+                duty_cycle = 5;
+            }
+            break;
     }
 }

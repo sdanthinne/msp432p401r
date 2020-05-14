@@ -148,7 +148,7 @@ void main_fg(void)
 {
     uint16_t value = 0;
     uint32_t count = 0;
-    P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
+    //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
     wave_type = SINE_WAVE;//select the default waveform to output
     duty_cycle = 9;

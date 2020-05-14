@@ -46,14 +46,17 @@ uint8_t get_key_pressed()
 {
     uint8_t i;
     uint8_t val;
+    P5->OUT&=~(BIT0|BIT1|BIT2);
     for (i = 0; i < 3; i++) {
         P5->OUT = (1 << i)|(P5->OUT&BIT3);                  //toggles the right ones on
         if ((P5->IN & (BIT4|  BIT5 | BIT6 | BIT7)) != 0)    //if the rows are not zero, if there is keypress
         {
             val = (P5->IN | P5->OUT) & ~BIT3;
+            P5->OUT|=(BIT0|BIT1|BIT2);
             return val;              // returns ROW/COLUMN value of key pressed
         }
     }
+    P5->OUT|=(BIT0|BIT1|BIT2);
     return 0;
 }
 
@@ -230,7 +233,7 @@ void PORT5_IRQHandler(void)
                 /* If wave is a square wave, decrease duty cycle by 10%
                  * (use 10% as minimum)
                  */
-                duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle--;
+                duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle-1;
             }
             break;
         case KEY_POUND:
@@ -239,7 +242,7 @@ void PORT5_IRQHandler(void)
                 /* If wave is a square wave, increase duty cycle by 10%
                  * (use 90% as maximum)
                  */
-                duty_cycle = (duty_cycle == 9) ? 9 : duty_cycle++;
+                duty_cycle = (duty_cycle == 9) ? 9 : duty_cycle+1;
             }
             break;
         case KEY_ZERO:

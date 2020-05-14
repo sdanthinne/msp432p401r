@@ -12,7 +12,8 @@
 #define TIME_MARGIN 63 //TODO: some margin of time to allow for errors. (in us) (currently experimentally set)
 #define DCO_SPEED 24
 
-#define SAW_TUNE (20/4)
+#define SAW_TUNE (400/105)
+
 #define SIN_TUNE (1325/700)
 
 #define INTERRUPT_FREQUENCY 24600

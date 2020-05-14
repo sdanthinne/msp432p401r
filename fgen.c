@@ -73,10 +73,15 @@ void setup_fg(void)
  */
 uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
 {
-    float fl_count = sin_count;
-    return sine_wave_3v[((uint16_t)(((fl_count)*(SIN_TUNE))
-            *(sin_frequency/100)))//scale it by the frequency that we selected
-                        %(sizeof(sine_wave_3v)/sizeof(uint16_t))];//mod by the number of elements in array
+    //P6->OUT|=BIT0;
+    uint16_t max_count = (INTERRUPT_FREQUENCY / sin_frequency);
+    uint16_t normalized_count = sin_count % max_count;
+    uint16_t array_val = (512 * normalized_count) / (max_count);
+    //delay_us(100);
+
+
+    return sine_wave_3v[array_val];
+
 }
 
 /**
@@ -84,7 +89,7 @@ uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
  */
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
 {
-    return square_wave[ (sq_count % (INTERRUPT_FREQUENCY/sq_frequency))     // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
+    return square_wave[(sq_count % (INTERRUPT_FREQUENCY/sq_frequency))     // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
                         < ((INTERRUPT_FREQUENCY/(sq_frequency)+1) *(sq_duty_cycle)/10)];   // checks to see if normalized square count is less than the maximum square count divided by duty cycle
 }
 
@@ -93,7 +98,9 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
  */
 uint16_t get_sawtooth(uint32_t saw_count, uint16_t saw_frequency)
 {
-    return (((saw_count*SAW_TUNE)*(saw_frequency/100))%930);
+    return ((((saw_count*400))/114
+            *(saw_frequency/100))
+            %930);
 }
 
 /**
@@ -139,15 +146,16 @@ void main_fg(void)
 {
     uint16_t value = 0;
     uint32_t count = 0;
-    //P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
+    P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
-    wave_type = SQUARE_WAVE;//select the default waveform to output
+    wave_type = SINE_WAVE;//select the default waveform to output
     duty_cycle = 9;
-    frequency = 500;//set the frequency
+    frequency = 100;//set the frequency
 
     while(1)
     {
         value = get_value(count++,wave_type);//get the value
+        //P6->OUT&=~BIT0;
         while(!is_ready);//wait until the interrupt says to write a value
         write_DAC(value);//write the value
         is_ready = 0;//set our homemade flag to 0

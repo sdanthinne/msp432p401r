@@ -1,5 +1,6 @@
 #include "keypad.h"
 #include "fgen.h"
+#define Hz500 498
 /*
  * keypad.c
  *
@@ -212,7 +213,7 @@ void PORT5_IRQHandler(void)
             frequency = 400; // Set 400 Hz frequency
             break;
         case KEY_FIVE:
-            frequency = 498; // Set 500 Hz frequency
+            frequency = Hz500; // Set 500 Hz frequency
             break;
         case KEY_SIX:
             if(wave_type&TRIANGLE_WAVE)

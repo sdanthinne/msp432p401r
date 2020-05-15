@@ -6,13 +6,15 @@
  * fgen.c
  *
  *  Created on: May 11, 2020
- *      Author: sdanthinne
+ *      Author: sdanthinne aknapen crapp
  * Contains all of the logic for CPE 316 P2.
  * assumes that we are running DCO speed at 24MHz.
  * outputs:
  *  square wave
  *  sine wave
  *  sawtooth wave
+ *  trianglewave
+ *  Superpostion of any waves
  * Frequencies:
  *  100 Hz
  *  200 Hz
@@ -27,14 +29,7 @@
  * Amplitude:
  *  between 0 and 931 (0-3)V
  *
- *
- *IMPORTANT when getting the settings from the ISR with the keypad, we should maybe
- *IMPORTANT stop the interrupts of the DAC output? Might help with interrupt priority
- *IMPORTANT I think that interrupts from timer precede over port interrupts.
  */
-
-
-
 
 /**
  * sets the time interval for the CCR1 in order to get the
@@ -68,19 +63,6 @@ void setup_fg(void)
 }
 
 /**
- * returns the value of the sine wave at count
- * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
- * what makes the base wave 100MHz - currently incorrect
- */
-//uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
-//{
-//    uint16_t max_count = (INTERRUPT_FREQUENCY / sin_frequency);
-//    uint16_t normalized_count = sin_count % max_count;
-//    uint16_t array_val = (512 * normalized_count) / (max_count);
-//    return sine_wave_3v[array_val];
-//}
-
-/**
  * returns the correct value for the square wave with duty cycle
  */
 uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
@@ -90,79 +72,26 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
 }
 
 /**
- * returns the value of the sine wave at count
- * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
- * what makes the base wave 100MHz - currently incorrect
- */
-//uint16_t get_triangle(uint32_t tri_count,uint16_t tri_frequency)
-//{
-//    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
-//    uint16_t normalized_count = tri_count % max_count;
-//    uint16_t array_val = (512 * normalized_count) / (max_count);
-//    return triangle_wave_3v[array_val];
-//}
-
-
-/**
- * generates a sawtooth wave based on the counter
- */
-//uint16_t get_sawtooth(uint32_t tri_count,uint16_t tri_frequency)
-//{
-//    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
-//    uint16_t normalized_count = tri_count % max_count;
-//    uint16_t saw_val = (930 * normalized_count) / (max_count);
-//    return saw_val;
-//}
-
-/**
- * using function pointers - probably not and the global variables that are
- * set at the head of this file, this will return the correct
- * value for the count that we are at.
- * currently this case statement is a little slow. -
- * noticable in terms of waveform
- * if block is marginally faster
+ * Returns the value of all currently active waves superimposed onto eachother
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
 {
-    uint16_t out_value = 0;
-    uint16_t max_count = (INTERRUPT_FREQUENCY / frequency);
-    uint16_t normalized_count = count % max_count;
-    uint16_t array_val = (512 * normalized_count) / (max_count);
-    uint16_t squareness = get_square(count,frequency,duty_cycle);
-    squareness = (SQUARE_WAVE&wave_type)? squareness:0;
+    uint16_t out_value = 0;          // value to be returned
+    uint16_t max_count = (INTERRUPT_FREQUENCY / frequency);     // Does math to determine maximum number of updates in a period given frequency of interrupts and of wave
+    uint16_t normalized_count = count % max_count;      // Normalizes the count to be within 0 and the maximum value
+    uint16_t array_val = (512 * normalized_count) / (max_count);    // Computes the index in the LUT given the count
+    uint16_t squareness = get_square(count,frequency,duty_cycle);   // Calculates the square wave value independently because of duty cycle requirements
+                                                            // Note: It is necessary for squarewave to be calculated every time for consistent frequency values.
+    squareness = (SQUARE_WAVE&wave_type)? squareness:0;     // If square wave is enabled keep determined value, otherwise set to 0
 
-//we may have gone too far in our search for sp[eed
+    //we may have gone too far in our search for speed
     out_value=
-              waves_3v[SAWTOOTH_WAVE&wave_type][array_val] +
-              waves_3v[SINE_WAVE&wave_type][array_val] +
-              waves_3v[TRIANGLE_WAVE&wave_type][array_val] +
-              squareness;
+              waves_3v[SAWTOOTH_WAVE&wave_type][array_val] +        // If Sawtooth is active add its value to the total
+              waves_3v[SINE_WAVE&wave_type][array_val] +            // If Sinwave is active add its value to the total
+              waves_3v[TRIANGLE_WAVE&wave_type][array_val] +        // If Triangle is active add its value to the total
+              squareness;                                           // If Squarewave is active add its value to the total
 
-//    if(wave_type & SAWTOOTH_WAVE)
-//    {
-//        out_value+= waves[SAWTOOTH_WAVE][array_val];
-//    }
-//    if(wave_type & SINE_WAVE)
-//    {
-//        out_value+= waves[SINE_WAVE][array_val];
-//    }
-//    if(wave_type & TRIANGLE_WAVE)
-//    {
-//        out_value+= waves[TRIANGLE_WAVE][array_val];
-//    }
-//    return out_value/wave_count;
-//    switch(wave_type)
-//    {
-//    case SINE_WAVE:
-//        return get_sine(count,frequency);
-//    case SQUARE_WAVE:
-//        return get_square(count, frequency,duty_cycle);
-//    case SAWTOOTH_WAVE:
-//        return get_sawtooth(count,frequency);
-//    default:
-//        return get_sine(count,frequency);
-//    }
-    return out_value/wave_count;
+    return out_value/wave_count;        // Divide by the number of currently active waves to scaled super imposed wave.
 }
 
 /**
@@ -180,10 +109,9 @@ void main_fg(void)
     duty_cycle = 9;
     frequency = 100;//set the frequency
 
-    while(1)
+    while(1)   // Function loop
     {
         value = get_value(count++,wave_type);//get the value
-        //P6->OUT&=~BIT0;
         while(!is_ready);//wait until the interrupt says to write a value
         write_DAC(value);//write the value
         is_ready = 0;//set our homemade flag to 0
@@ -195,8 +123,7 @@ void main_fg(void)
  */
 void TA0_0_IRQHandler(void)
 {
-    //P6->OUT^=BIT0;//WARNING: ADDING THIS LINE SIGNIFICANTLY INCREASES PERIOD
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;//clear flag
-    is_ready = 1;
+    is_ready = 1;       // Sets our check flag to know we are ready to increment our counter
     TIMER_A0->CCR[0]+=TIMER_VALUE;//go for next sample time
 }

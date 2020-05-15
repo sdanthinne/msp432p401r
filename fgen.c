@@ -63,15 +63,6 @@ void setup_fg(void)
 }
 
 /**
- * returns the correct value for the square wave with duty cycle
- */
-uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_cycle)
-{
-    return square_wave[(sq_count % (INTERRUPT_FREQUENCY/sq_frequency))     // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
-                        < ((INTERRUPT_FREQUENCY/(sq_frequency)+1) *(sq_duty_cycle)/10)];   // checks to see if normalized square count is less than the maximum square count divided by duty cycle
-}
-
-/**
  * Returns the value of all currently active waves superimposed onto eachother
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
@@ -80,16 +71,13 @@ uint16_t get_value(uint32_t count,uint8_t wave_type)
     uint16_t max_count = (INTERRUPT_FREQUENCY / frequency);     // Does math to determine maximum number of updates in a period given frequency of interrupts and of wave
     uint16_t normalized_count = count % max_count;      // Normalizes the count to be within 0 and the maximum value
     uint16_t array_val = (512 * normalized_count) / (max_count);    // Computes the index in the LUT given the count
-    uint16_t squareness = get_square(count,frequency,duty_cycle);   // Calculates the square wave value independently because of duty cycle requirements
-                                                            // Note: It is necessary for squarewave to be calculated every time for consistent frequency values.
-    squareness = (SQUARE_WAVE&wave_type)? squareness:0;     // If square wave is enabled keep determined value, otherwise set to 0
 
     //we may have gone too far in our search for speed
     out_value=
               waves_3v[SAWTOOTH_WAVE&wave_type][array_val] +        // If Sawtooth is active add its value to the total
               waves_3v[SINE_WAVE&wave_type][array_val] +            // If Sinwave is active add its value to the total
               waves_3v[TRIANGLE_WAVE&wave_type][array_val] +        // If Triangle is active add its value to the total
-              squareness;                                           // If Squarewave is active add its value to the total
+              waves_3v[SQUARE_WAVE&wave_type][SQUARE_INDEX];        // If Squarewave is active add its value to the total
 
     return out_value/wave_count;        // Divide by the number of currently active waves to scaled super imposed wave.
 }

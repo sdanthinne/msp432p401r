@@ -72,13 +72,13 @@ void setup_fg(void)
  * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
  * what makes the base wave 100MHz - currently incorrect
  */
-uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
-{
-    uint16_t max_count = (INTERRUPT_FREQUENCY / sin_frequency);
-    uint16_t normalized_count = sin_count % max_count;
-    uint16_t array_val = (512 * normalized_count) / (max_count);
-    return sine_wave_3v[array_val];
-}
+//uint16_t get_sine(uint32_t sin_count,uint16_t sin_frequency)
+//{
+//    uint16_t max_count = (INTERRUPT_FREQUENCY / sin_frequency);
+//    uint16_t normalized_count = sin_count % max_count;
+//    uint16_t array_val = (512 * normalized_count) / (max_count);
+//    return sine_wave_3v[array_val];
+//}
 
 /**
  * returns the correct value for the square wave with duty cycle
@@ -94,25 +94,25 @@ uint16_t get_square(uint32_t sq_count, uint16_t sq_frequency, uint16_t sq_duty_c
  * TODO: NEED TO REMOVE MAGIC NUMBERS - the 100/19 is
  * what makes the base wave 100MHz - currently incorrect
  */
-uint16_t get_triangle(uint32_t tri_count,uint16_t tri_frequency)
-{
-    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
-    uint16_t normalized_count = tri_count % max_count;
-    uint16_t array_val = (512 * normalized_count) / (max_count);
-    return triangle_wave_3v[array_val];
-}
+//uint16_t get_triangle(uint32_t tri_count,uint16_t tri_frequency)
+//{
+//    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
+//    uint16_t normalized_count = tri_count % max_count;
+//    uint16_t array_val = (512 * normalized_count) / (max_count);
+//    return triangle_wave_3v[array_val];
+//}
 
 
 /**
  * generates a sawtooth wave based on the counter
  */
-uint16_t get_sawtooth(uint32_t tri_count,uint16_t tri_frequency)
-{
-    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
-    uint16_t normalized_count = tri_count % max_count;
-    uint16_t saw_val = (930 * normalized_count) / (max_count);
-    return saw_val;
-}
+//uint16_t get_sawtooth(uint32_t tri_count,uint16_t tri_frequency)
+//{
+//    uint16_t max_count = (INTERRUPT_FREQUENCY / tri_frequency);
+//    uint16_t normalized_count = tri_count % max_count;
+//    uint16_t saw_val = (930 * normalized_count) / (max_count);
+//    return saw_val;
+//}
 
 /**
  * using function pointers - probably not and the global variables that are
@@ -125,24 +125,32 @@ uint16_t get_sawtooth(uint32_t tri_count,uint16_t tri_frequency)
 uint16_t get_value(uint32_t count,uint8_t wave_type)
 {
     uint16_t out_value = 0;
+    uint16_t max_count = (INTERRUPT_FREQUENCY / frequency);
+    uint16_t normalized_count = count % max_count;
+    uint16_t array_val = (512 * normalized_count) / (max_count);
+    uint16_t squareness = get_square(count,frequency,duty_cycle);
+    squareness = (SQUARE_WAVE&wave_type)? squareness:0;
 
-    if(wave_type & SQUARE_WAVE)
-    {
-        out_value+= get_square(count, frequency,duty_cycle);
-    }
-    if(wave_type & SAWTOOTH_WAVE)
-    {
-        out_value+= get_sawtooth(count,frequency);
-    }
-    if(wave_type & SINE_WAVE)
-    {
-        out_value+= get_sine(count,frequency);
-    }
-    if(wave_type & TRIANGLE_WAVE)
-    {
-        out_value+= get_triangle(count,frequency);
-    }
-    return out_value/wave_count;
+//we may have gone too far in our search for sp[eed
+    out_value=
+              waves_3v[SAWTOOTH_WAVE&wave_type][array_val] +
+              waves_3v[SINE_WAVE&wave_type][array_val] +
+              waves_3v[TRIANGLE_WAVE&wave_type][array_val] +
+              squareness;
+
+//    if(wave_type & SAWTOOTH_WAVE)
+//    {
+//        out_value+= waves[SAWTOOTH_WAVE][array_val];
+//    }
+//    if(wave_type & SINE_WAVE)
+//    {
+//        out_value+= waves[SINE_WAVE][array_val];
+//    }
+//    if(wave_type & TRIANGLE_WAVE)
+//    {
+//        out_value+= waves[TRIANGLE_WAVE][array_val];
+//    }
+//    return out_value/wave_count;
 //    switch(wave_type)
 //    {
 //    case SINE_WAVE:
@@ -154,6 +162,7 @@ uint16_t get_value(uint32_t count,uint8_t wave_type)
 //    default:
 //        return get_sine(count,frequency);
 //    }
+    return out_value/wave_count;
 }
 
 /**
@@ -189,5 +198,5 @@ void TA0_0_IRQHandler(void)
     //P6->OUT^=BIT0;//WARNING: ADDING THIS LINE SIGNIFICANTLY INCREASES PERIOD
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;//clear flag
     is_ready = 1;
-    TIMER_A0->CCR[0]+=320;//go for next sample time
+    TIMER_A0->CCR[0]+=TIMER_VALUE;//go for next sample time
 }

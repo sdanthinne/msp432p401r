@@ -212,7 +212,7 @@ void PORT5_IRQHandler(void)
             frequency = 400; // Set 400 Hz frequency
             break;
         case KEY_FIVE:
-            frequency = 500; // Set 500 Hz frequency
+            frequency = 498; // Set 500 Hz frequency
             break;
         case KEY_SIX:
             if(wave_type&TRIANGLE_WAVE)
@@ -249,6 +249,7 @@ void PORT5_IRQHandler(void)
                  * (use 10% as minimum)
                  */
                 duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle-1;
+
             }
             break;
         case KEY_POUND:
@@ -263,9 +264,9 @@ void PORT5_IRQHandler(void)
         case KEY_ZERO:
             // If wave is a square wave, reset duty cycle to 50%
             duty_cycle = 5;
+            frequency = 100;
             wave_type = SQUARE_WAVE;
             wave_count = 1;
-
             break;
     }
     P5->IFG &= ~(BIT4 | BIT5 | BIT6 | BIT7); // clear the interrupt flags

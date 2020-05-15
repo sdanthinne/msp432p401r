@@ -2,35 +2,35 @@
  * fgen.h
  *
  *  Created on: May 11, 2020
- *      Author: sdanthinne
+ *      Author: sdanthinne, aknpaen, crapp
  */
 
 #ifndef FGEN_H_
 #define FGEN_H_
-#define MIN_OUT_RATE 7 //the minimum amount of time it takes to write out to the DAC. (in us)
+#define MIN_OUT_RATE 7 //the minimum amount of time it takes to write out to the DAC
 #define SAMPLE_TIME (MIN_OUT_RATE + TIME_MARGIN)
-#define TIME_MARGIN 63 //TODO: some margin of time to allow for errors. (in us) (currently experimentally set)
+#define TIME_MARGIN 63
 #define DCO_SPEED 24
 #define TIMER_VALUE 320
 
 #define INTERRUPT_FREQUENCY 56770
 
-//types of waves that the wave gen supports. Allows us to do bitwise checks for active waves
+//types of waves that the wave gen supports. Allows us to do bitwise checks
 #define SINE_WAVE 1
 #define TRIANGLE_WAVE 2
 #define SQUARE_WAVE 4
 #define SAWTOOTH_WAVE 8
 
-#define SQUARE_INDEX ((count % max_count)< ((INTERRUPT_FREQUENCY/(frequency)+1) *(duty_cycle)/10)) // Macro for calculating index into square wave array
-        // Creates an adjust sq count normalized to a maximum determined by frequency of interrupts and square wave
-        // checks to see if normalized square count is less than the maximum square count divided by duty cycle
+#define SQUARE_INDEX ((count % max_count)< \
+                      ((INTERRUPT_FREQUENCY/(frequency)+1) *\
+                              (duty_cycle)/10))
+        // Macro for calculating index into square wave array
+        // Creates an adjust sq count normalized to a maximum determined by
+        //frequency of interrupts and square wave
+        // checks to see if normalized square count is less than the maximum square
+        //count divided by duty cycle
 
 void main_fg(void);
-
-static const uint16_t square_wave[2] =  // Square wave LUT is seperate
-{
-     0,930
-};
 
 uint8_t wave_type;  //the type of the wave - refer to macros
 uint8_t duty_cycle; //duty cycle of square wave (1-9 -> 10%->90%)
@@ -41,7 +41,7 @@ uint8_t wave_count; // Count of how many waves are currently active
 static const uint16_t waves_3v[9][512] =   // Array of LUT using macro values as indexes
 {
 
- { // LUT of 0's allowing us to index and use LUT without any additional logic statements. Considerably speeding up operations
+ { // LUT of 0's allowing index and use LUT without any additional logic statements
       0,0,0,0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,0,0,0,0,0,

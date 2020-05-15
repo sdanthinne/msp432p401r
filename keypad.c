@@ -1,7 +1,6 @@
 #include "keypad.h"
 #include "fgen.h"
-#define Hz500 499
-#define Hz400 398
+
 /*
  * keypad.c
  *
@@ -38,7 +37,7 @@ void setup_keypad()
 uint8_t has_press()
 {
     P5->OUT|=(BIT0|BIT1|BIT2);              //sets all of the outputs to high
-    return (P5->IN&(BIT4|BIT5|BIT6|BIT7));  //returns the row values or'd together(unique value for each row)
+    return (P5->IN&(BIT4|BIT5|BIT6|BIT7));  //returns the row values or'd together
 }
 
 /**
@@ -51,7 +50,8 @@ uint8_t get_key_pressed()
     P5->OUT&=~(BIT0|BIT1|BIT2);
     for (i = 0; i < 3; i++) {
         P5->OUT = (1 << i)|(P5->OUT&BIT3);                  //toggles the right ones on
-        if ((P5->IN & (BIT4|  BIT5 | BIT6 | BIT7)) != 0)    //if the rows are not zero, if there is keypress
+        //if the rows are not zero, if there is keypress
+        if ((P5->IN & (BIT4|  BIT5 | BIT6 | BIT7)) != 0)
         {
             val = (P5->IN | P5->OUT) & ~BIT3;
             P5->OUT|=(BIT0|BIT1|BIT2);
@@ -215,10 +215,10 @@ void PORT5_IRQHandler(void)
             frequency = 300; // Set 300 Hz frequency
             break;
         case KEY_FOUR:
-            frequency = Hz400; // Set 400 Hz frequency
+            frequency = 400; // Set 400 Hz frequency
             break;
         case KEY_FIVE:
-            frequency = Hz500; // Set 500 Hz frequency
+            frequency = 500; // Set 500 Hz frequency
             break;
         case KEY_SIX:
             if(wave_type&TRIANGLE_WAVE)
@@ -271,7 +271,6 @@ void PORT5_IRQHandler(void)
                  * (use 10% as minimum)
                  */
                 duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle-1;
-
             }
             break;
         case KEY_POUND:

@@ -38,23 +38,7 @@ void setup_SPI_b0()
  */
 void write_byte_b0(uint8_t byte)
 {
-//    //(EUSCI_B0_SPI->IFG&BIT1)
-//    uint16_t ifg = EUSCI_B0_SPI->IFG;
-//    uint16_t cond = ~(EUSCI_B0_SPI->IFG & BIT1) & BIT1;
+
     while ((~(EUSCI_B0_SPI->IFG & BIT1)) & BIT1);
-    EUSCI_B0_SPI -> TXBUF = byte; //put in the data
+    EUSCI_B0_SPI -> TXBUF = byte; //put in the data to the buffer
 }
-
-
-/*
- * not currently necessary
- */
-void EUSCIB0_IRQHandler()
-{
-    if(EUSCI_B0_SPI->IV==0x4)//if the interrupt is of the correct type (TX)
-    {
-        while((EUSCI_B0_SPI->STATW&EUSCI_B_STATW_SPI_BUSY));//wait for it to finish writing
-    }
-    EUSCI_B0_SPI->IFG&=~BIT1;//reset flag
-}
-

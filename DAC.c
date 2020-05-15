@@ -32,11 +32,11 @@ void write_DAC(uint16_t bytes)
 
     P4->OUT&=~BIT1;//set the cs to low
 
-    write_byte_b0(0x70|(bytes>>6));//put the data into the txbuf with the correct settings
-//
+    write_byte_b0(0x70|(bytes>>6));//put the data into the txbuf with correct setting
+
     write_byte_b0((bytes<<2));//write the next half of the byte
 
-    while((EUSCI_B0_SPI->STATW & EUSCI_B_STATW_SPI_BUSY));//wait for the entire signal to be written
+    while((EUSCI_B0_SPI->STATW & EUSCI_B_STATW_SPI_BUSY));//wait for signal write
 
     P4->OUT|=BIT1;//set cs high again after signal has been written
 

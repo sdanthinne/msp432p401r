@@ -106,7 +106,7 @@ void main_fg(void)
     setup_fg();//run setup
     wave_type = SQUARE_WAVE;//select the default waveform to output
     wave_count = 1;
-    duty_cycle = 9;
+    duty_cycle = 5;
     frequency = 100;//set the frequency
 
     while(1)   // Function loop

@@ -1,6 +1,7 @@
 #include "keypad.h"
 #include "fgen.h"
-#define Hz500 498
+#define Hz500 499
+#define Hz400 398
 /*
  * keypad.c
  *
@@ -61,6 +62,10 @@ uint8_t get_key_pressed()
     return 0;
 }
 
+/**
+ * Debouncing method for getting the input of the keypad.
+ *
+ */
 uint8_t update_key_press(uint8_t prev_key)
 {
 
@@ -210,37 +215,53 @@ void PORT5_IRQHandler(void)
             frequency = 300; // Set 300 Hz frequency
             break;
         case KEY_FOUR:
-            frequency = 400; // Set 400 Hz frequency
+            frequency = Hz400; // Set 400 Hz frequency
             break;
         case KEY_FIVE:
             frequency = Hz500; // Set 500 Hz frequency
             break;
         case KEY_SIX:
             if(wave_type&TRIANGLE_WAVE)
+            {
                 wave_count--;
+            }
             else
+            {
                 wave_count++;
+            }
             wave_type ^= TRIANGLE_WAVE; // use triangle wave
             break;
         case KEY_SEVEN:
             if(wave_type&SQUARE_WAVE)
+            {
                 wave_count--;
+            }
             else
+            {
                 wave_count++;
+            }
             wave_type ^= SQUARE_WAVE; // use square wave
             break;
         case KEY_EIGHT:
             if(wave_type&SINE_WAVE)
+            {
                 wave_count--;
+            }
             else
+            {
                 wave_count++;
+            }
             wave_type ^= SINE_WAVE; // use sine wave
             break;
         case KEY_NINE:
             if(wave_type&SAWTOOTH_WAVE)
+            {
                 wave_count--;
+            }
             else
+            {
                 wave_count++;
+            }
             wave_type ^= SAWTOOTH_WAVE; // use sawtooth wave
             break;
         case KEY_STAR:

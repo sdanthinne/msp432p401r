@@ -13,7 +13,7 @@
 #define DCO_SPEED 24
 #define TIMER_VALUE 320
 
-#define INTERRUPT_FREQUENCY 53883
+#define INTERRUPT_FREQUENCY 56770
 
 //types of waves that the wave gen supports. Allows us to do bitwise checks for active waves
 #define SINE_WAVE 1

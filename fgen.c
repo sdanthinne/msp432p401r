@@ -2,6 +2,7 @@
 #include "fgen.h"
 #include "timer.h"
 #include "DAC.h"
+#include "keypad.h"
 /*
  * fgen.c
  *
@@ -46,7 +47,8 @@ void set_timer_fg(uint16_t time)
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enable
     TIMER_A0->CCR[0] = time*DCO_SPEED;
     NVIC->ISER[0] = 1 << (TA0_0_IRQn&31);//enable interrupts for below routine
-    NVIC->IP[2] |= BIT0; // assigns interrupt priority 1 (second highest) to TimerA0 in NVIC
+    // assigns interrupt priority 1 (second highest) to TimerA0 in NVIC
+    NVIC->IP[2] |= BIT0;
     __enable_irq();
 }
 
@@ -67,19 +69,30 @@ void setup_fg(void)
  */
 uint16_t get_value(uint32_t count,uint8_t wave_type)
 {
-    uint16_t out_value = 0;          // value to be returned
-    uint16_t max_count = (INTERRUPT_FREQUENCY / frequency);     // Does math to determine maximum number of updates in a period given frequency of interrupts and of wave
-    uint16_t normalized_count = count % max_count;      // Normalizes the count to be within 0 and the maximum value
-    uint16_t array_val = (512 * normalized_count) / (max_count);    // Computes the index in the LUT given the count
+    // value to be returned
+    uint16_t out_value = 0;
 
-    //we may have gone too far in our search for speed
-    out_value=
-              waves_3v[SAWTOOTH_WAVE&wave_type][array_val] +        // If Sawtooth is active add its value to the total
-              waves_3v[SINE_WAVE&wave_type][array_val] +            // If Sinwave is active add its value to the total
-              waves_3v[TRIANGLE_WAVE&wave_type][array_val] +        // If Triangle is active add its value to the total
-              waves_3v[SQUARE_WAVE&wave_type][SQUARE_INDEX];        // If Squarewave is active add its value to the total
+    // Does math to determine maximum number of updates
+    //in a period given frequency of interrupts and of wave
+    uint16_t max_count = (INTERRUPT_FREQUENCY / frequency);
 
-    return out_value/wave_count;        // Divide by the number of currently active waves to scaled super imposed wave.
+    // Normalizes the count to be within 0 and the maximum value
+    uint16_t normalized_count = count % max_count;
+
+    // Computes the index in the LUT given the count
+    uint16_t array_val = (512 * normalized_count) / (max_count);
+
+    out_value=// If Sawtooth is active add value to total
+              waves_3v[SAWTOOTH_WAVE&wave_type][array_val] +
+              // If Sinwave is active add value to total
+              waves_3v[SINE_WAVE&wave_type][array_val] +
+              // If Triangle is active add value to total
+              waves_3v[TRIANGLE_WAVE&wave_type][array_val] +
+              // If Squarewave is active add value to total
+              waves_3v[SQUARE_WAVE&wave_type][SQUARE_INDEX];
+
+    // Divide by the number of active waves to scaled superimposed wave
+    return out_value/wave_count;
 }
 
 /**
@@ -90,7 +103,6 @@ void main_fg(void)
     uint16_t value = 0;
     uint32_t count = 0;
 
-    P6->DIR|=BIT0; //FOR DIAGNOSTICS/testing
     setup_fg();//run setup
     wave_type = SQUARE_WAVE;//select the default waveform to output
     wave_count = 1;
@@ -112,6 +124,6 @@ void main_fg(void)
 void TA0_0_IRQHandler(void)
 {
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;//clear flag
-    is_ready = 1;       // Sets our check flag to know we are ready to increment our counter
+    is_ready = 1;       // Sets our check flag to output
     TIMER_A0->CCR[0]+=TIMER_VALUE;//go for next sample time
 }

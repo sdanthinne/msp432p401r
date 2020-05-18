@@ -2,7 +2,7 @@
  * delay.h
  *
  *  Created on: Apr 10, 2020
- *      Author: sdanthinne
+ *      Author: sdanthinne,aknapen,crapp
  */
 
 #ifndef DELAY_H_
@@ -16,6 +16,10 @@
 #define OVERHEAD12 6
 #define OVERHEAD24 3
 #define OVERHEAD48 0
+#define STATIC_OVERHEAD 40
+#define SMALL_CYC_DIV 7
+#define BIG_CYC_DIV 7
+
 void delay_us(uint32_t delay);
 
 

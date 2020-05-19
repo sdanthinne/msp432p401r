@@ -271,13 +271,6 @@ void set_address_counter_4(uint8_t row, uint8_t col)
 }
 
 /**
- * gets the location of the lcd cursor
- */
-uint8_t get_lcd_location_4()
-{
-    return read_ins_4();
-}
-/**
  * needs to be updated
  */
 void write_string_4(uint8_t * c)

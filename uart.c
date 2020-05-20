@@ -5,6 +5,8 @@
  *      Author: aknapen, crapp, sdanthinne
  */
 #include "msp.h"
+#include "DCO.h"
+#include "uart.h"
 
 void setup_uart()
 {
@@ -18,13 +20,15 @@ void setup_uart()
                        EUSCI_A_CTLW0_PAR | // use even parity
                        EUSCI_A_CTLW0_PEN; // enable parity
 
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SPB; // use one stop bit
 
-    // Baud rate configuration for 50 kbps with a 1.5 MHz clock
+
+    // Baud rate configuration for 57.6 kbps with a 1.5 MHz clock
 
     EUSCI_A0->BRW = 1; // set clock prescaler for baud rate generation
 
     EUSCI_A0->MCTLW |= EUSCI_A_MCTLW_OS16; // enable oversampling mode
-    EUSCI_A0->MCTLW |= UCBRF__14; // First module stage select for modulation pattern
+    EUSCI_A0->MCTLW |= UCBRF__10; // First module stage select for modulation pattern
     EUSCI_A0->MCTLW &= ~EUSCI_A_MCTLW_BRS_MASK; // clears second modulation stage select
 
     EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SWRST; // disable software reset

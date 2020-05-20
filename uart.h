@@ -8,7 +8,7 @@
 #ifndef UART_H_
 #define UART_H_
 
-#define UCBRF__14 (14 << 4)
+#define UCBRF__10 (10 << 4)
 
 void setup_uart();
 

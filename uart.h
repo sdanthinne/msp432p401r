@@ -8,6 +8,7 @@
 #ifndef UART_H_
 #define UART_H_
 
+#define UCBRF__2 (2 << 4)
 #define UCBRF__10 (10 << 4)
 #define UCBRF__12 (12 << 4)
 #define UCBRF__MAX (15 << 4)

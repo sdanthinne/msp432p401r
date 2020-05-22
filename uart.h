@@ -9,6 +9,8 @@
 #define UART_H_
 
 #define UCBRF__10 (10 << 4)
+#define UCBRF__12 (12 << 4)
+#define UCBRF__MAX (15 << 4)
 
 void setup_uart();
 

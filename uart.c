@@ -23,12 +23,12 @@ void setup_uart()
     EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SPB; // use one stop bit
 
 
-    // Baud rate configuration for 57.6 kbps with a 1.5 MHz clock
+    // Baud rate configuration for 9600 bps with a 1.5 MHz clock
 
-    EUSCI_A0->BRW = 1; // set clock prescaler for baud rate generation
+    EUSCI_A0->BRW = 9; // set clock prescaler for baud rate generation
 
     EUSCI_A0->MCTLW |= EUSCI_A_MCTLW_OS16; // enable oversampling mode
-    EUSCI_A0->MCTLW |= UCBRF__10; // First module stage select for modulation pattern
+    EUSCI_A0->MCTLW |= UCBRF__12; // First module stage select for modulation pattern
     EUSCI_A0->MCTLW &= ~EUSCI_A_MCTLW_BRS_MASK; // clears second modulation stage select
 
     EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SWRST; // disable software reset

@@ -18,13 +18,12 @@ void main(void)
     P6->SEL1 &= ~BIT4;
     P6->OUT |= BIT4;
 
-//    while (1)
-//    {
-//        while (~(EUSCI_A0->IFG & EUSCI_A_IFG_TXIFG) & EUSCI_A_IFG_TXIFG); // wait until TXBUF empty
-//        EUSCI_A0->TXBUF = 0x82; // first half of 'A'
-//        while (~(EUSCI_A0->IFG & EUSCI_A_IFG_TXIFG) & EUSCI_A_IFG_TXIFG); // wait until TXBUF empty
-//        EUSCI_A0->TXBUF = 0x04; // second half of 'A'
-//        P6->OUT ^= BIT4;
-//    }
-    EUSCI_A0->TXBUF = 0x82; // put data in transfer buffer
+    while (1)
+    {
+        while (~(EUSCI_A0->IFG & EUSCI_A_IFG_TXIFG) & EUSCI_A_IFG_TXIFG); // wait until TXBUF empty
+        EUSCI_A0->TXBUF = 0x82; // first half of 'A'
+        while (~(EUSCI_A0->IFG & EUSCI_A_IFG_TXIFG) & EUSCI_A_IFG_TXIFG); // wait until TXBUF empty
+        EUSCI_A0->TXBUF = 0x04; // second half of 'A'
+        P6->OUT ^= BIT4;
+    }
 }

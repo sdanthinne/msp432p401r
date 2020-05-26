@@ -12,6 +12,14 @@ void setup_uart()
 {
     set_SM_DCO(); // Configure DCO and SMCLK settings
 
+    // Configure Tx and Rx pins
+    P1->SEL0 |= BIT2;
+    P1->SEL1 &= ~BIT2; // configure P1.2 as UCA0RXD
+
+    P1->SEL0 |= BIT3;
+    P1->SEL1 &= ~BIT3;// configure P1.3 as UCA0TXD
+
+
     EUSCI_A0->CTLW0 |= EUSCI_A_CTLW0_SWRST; // enable software reset
 
     // Configure UART settings
@@ -30,7 +38,7 @@ void setup_uart()
     EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SPB; // use one stop bit
 
 
-    // Baud rate configuration for 9600 bps with a 1.5 MHz clock
+    // Baud rate configuration for 9600 bps with a 12 MHz clock
 
     EUSCI_A0->BRW = 78; // set clock prescaler for baud rate generation
 

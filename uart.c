@@ -15,10 +15,17 @@ void setup_uart()
     EUSCI_A0->CTLW0 |= EUSCI_A_CTLW0_SWRST; // enable software reset
 
     // Configure UART settings
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_MODE_MASK; // select UART mode
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SEVENBIT; // use 8-bit character length
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SPB; // use one stop bit
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_MSB; // send LSB first
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SYNC; // use asynchronous mode
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_TXBRK; // next frame is not a  transmit break
+    EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_TXADDR; // next frame is data
+
     EUSCI_A0->CTLW0 |= EUSCI_A_CTLW0_SSEL__SMCLK | // select SMCLK as source
-                       EUSCI_A_CTLW0_MODE_0 | // use UART mode
-                       EUSCI_A_CTLW0_PAR | // use even parity
-                       EUSCI_A_CTLW0_PEN; // enable parity
+                       EUSCI_A_CTLW0_PEN | // enable parity
+                       EUSCI_A_CTLW0_PAR; // use even parity
 
     EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SPB; // use one stop bit
 

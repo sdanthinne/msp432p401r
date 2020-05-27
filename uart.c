@@ -55,16 +55,16 @@ void setup_uart()
 
 void EUSCIA0_IRQHandler(void)
 {
-    P1->OUT |= BIT0;
-    if (EUSCI_A0->RXBUF == RETURN)
+    uint8_t read_val = EUSCI_A0->RXBUF;
+    if (read_val == RETURN)
     {
         is_ready = 1; // now ready to write value to DAC
     }
-    else if (ZERO <= EUSCI_A0->RXBUF && EUSCI_A0->RXBUF >= NINE) // check if read value is a number
+    else if ((ZERO <= read_val) && (read_val <= NINE)) // check if read value is a number
     {
-        dac_in = dac_in * 10; // shift digits one place to the right
-        dac_in += (EUSCI_A0->RXBUF - ZERO); // add decimal value of input to dac_in
+        dac_in = dac_in * 10; // shift digits one place to the left
+        dac_in += (read_val - ZERO); // add decimal value of input to dac_in
 
-        EUSCI_A0->TXBUF = EUSCI_A0->RXBUF; // echo user input back to terminal
+        EUSCI_A0->TXBUF = read_val; // echo user input back to terminal
     }
 }

@@ -7,26 +7,28 @@
 
 #include "msp.h"
 #include "uart.h"
+#include "DAC.h"
+
 
 void main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // stop watchdog timer
-    setup_uart(); // Configure use of UART
-    uint16_t read_val = 0;
 
-    P1->DIR |= BIT0; // set P1.0 output
+    setup_DAC(); // configure use of SPI with the DAC
+    setup_uart(); // Configure use of UART
+
+    is_ready = 0;
+    dac_in = 0;
+
+    P1->DIR |= BIT0;
     P1->SEL0 &= ~BIT0;
-    P1->SEL1 &= ~BIT0; // select GPIO for P1.0
-    P1->OUT &= ~BIT0; // turn LED off initially
+    P1->SEL1 &= ~BIT0;
+    P1->OUT &= ~BIT0;
 
     while (1)
     {
-        while (~(EUSCI_A0->IFG & EUSCI_A_IFG_RXIFG) & EUSCI_A_IFG_RXIFG); // wait until RXBUF is filled
-        //EUSCI_A0->TXBUF = 0x41; // transmit 'A'
-        read_val = EUSCI_A0->RXBUF;
-        if (read_val == 0x41) // if an A is read
-        {
-            P1->OUT ^= BIT0; // toggle LED
-        }
+        while(!is_ready); // wait until the program read to write to DAC
+        write_DAC(dac_in);
+        dac_in = 0; // reset DAC input value
     }
 }

@@ -7,11 +7,12 @@
 #include "msp.h"
 #include "DCO.h"
 #include "uart.h"
+#include "keypad.h"
+
+
 
 void setup_uart()
 {
-    set_SM_DCO(); // Configure DCO and SMCLK settings
-
     // Configure Tx and Rx pins
     P1->SEL0 |= BIT2;
     P1->SEL1 &= ~BIT2; // configure P1.2 as UCA0RXD
@@ -45,4 +46,25 @@ void setup_uart()
     EUSCI_A0->MCTLW &= ~EUSCI_A_MCTLW_BRS_MASK; // clears second modulation stage select
 
     EUSCI_A0->CTLW0 &= ~EUSCI_A_CTLW0_SWRST; // disable software reset
+
+
+    EUSCI_A0->IE |= EUSCI_A_IE_RXIE; // enable receive interrupts
+    NVIC->ISER[0] = 1 << (EUSCIA0_IRQn & 0x1F); //enable interrupts for EUSCI_A0
+    __enable_irq(); // enable global interrupts
+}
+
+void EUSCIA0_IRQHandler(void)
+{
+    P1->OUT |= BIT0;
+    if (EUSCI_A0->RXBUF == RETURN)
+    {
+        is_ready = 1; // now ready to write value to DAC
+    }
+    else if (ZERO <= EUSCI_A0->RXBUF && EUSCI_A0->RXBUF >= NINE) // check if read value is a number
+    {
+        dac_in = dac_in * 10; // shift digits one place to the right
+        dac_in += (EUSCI_A0->RXBUF - ZERO); // add decimal value of input to dac_in
+
+        EUSCI_A0->TXBUF = EUSCI_A0->RXBUF; // echo user input back to terminal
+    }
 }

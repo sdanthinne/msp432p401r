@@ -59,6 +59,8 @@ void EUSCIA0_IRQHandler(void)
     if ((read_val == NL) || (read_val == CR))
     {
         is_ready = 1; // now ready to write value to DAC
+        EUSCI_A0->TXBUF = NL; // echo user input back to terminal
+        EUSCI_A0->TXBUF = CR;
     }
     else if ((ZERO <= read_val) && (read_val <= NINE)) // check if read value is a number
     {

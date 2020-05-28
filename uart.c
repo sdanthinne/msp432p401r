@@ -56,7 +56,7 @@ void setup_uart()
 void EUSCIA0_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A0->RXBUF;
-    if (read_val == RETURN)
+    if ((read_val == NL) || (read_val == CR))
     {
         is_ready = 1; // now ready to write value to DAC
     }

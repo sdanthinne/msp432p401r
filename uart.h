@@ -13,7 +13,8 @@
 #define UCBRF__12 (12 << 4)
 #define UCBRF__MAX (15 << 4)
 
-#define RETURN 0x0A // return character
+#define NL 0x0A // return character
+#define CR 0x0D // carriage-return character
 
 uint8_t is_ready; // Indicates whether or not to write to DAC
 uint32_t dac_in; // input value to DAC

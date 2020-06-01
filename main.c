@@ -16,6 +16,7 @@ void main(void)
 
     setup_DAC(); // configure use of SPI with the DAC
     setup_uart(); // Configure use of UART
+    setup_bt_uart(); // Configure use of UART
     setup_bluetooth();
 
     is_ready = 0;

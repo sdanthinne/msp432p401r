@@ -9,8 +9,6 @@
 #include "uart.h"
 #include "keypad.h"
 
-
-
 void setup_bt_uart()
 {
     // Configure Tx and Rx pins
@@ -55,15 +53,10 @@ void setup_bt_uart()
 
 void setup_bluetooth()
 {
-    write_string_uart("Habe nun, ach! Philosophie, Juristerei und Medizin"
-            " Und leider auch Theologie Durchaus studiert, mit heißem Bemühn"); // Necessary to send a long string to wake up from sleep mode
+    write_string_uart("Habe nun ach Philosophie Juristerei und Medizin"
+            " Und leider auch Theologie Durchaus studiert, mit heissem Bemuehn"); // Necessary to send a long string to wake up from sleep mode
     write_bt_command("BAUD[0]");    // Sets the Baud rate to 9600
 
-}
-
-void EUSCIA2_IRQHandler(void)
-{
-    uint8_t read_val = EUSCI_A2->RXBUF;
 
 }
 
@@ -71,8 +64,12 @@ void write_string_uart(char *str)
 {
     while(*str!=0)
     {
-        EUSCI_A1->TXBUF = *str;
-        while(!(EUSCI_A1->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
+        EUSCI_A2->TXBUF = *str;
+        while(!(EUSCI_A2->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
+
+        EUSCI_A0->TXBUF = *str;
+        while(!(EUSCI_A0->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
+
         str+=sizeof(char);
     }
 }
@@ -83,3 +80,9 @@ void write_bt_command(char * str)
     write_string_uart(str);
 }
 
+
+void EUSCIA2_IRQHandler(void)
+{
+    uint8_t read_val = EUSCI_A2->RXBUF;
+    EUSCI_A0->TXBUF = read_val;
+}

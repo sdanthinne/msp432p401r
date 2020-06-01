@@ -28,9 +28,6 @@ void main(void)
 
     while (1)
     {
-        while(!is_ready); // wait until the program read to write to DAC
-        write_DAC(dac_in);
-        dac_in = 0; // reset DAC input value
-        is_ready = 0;
+        write_string_uart("A");
     }
 }

@@ -15,9 +15,10 @@
 
 #define RETURN 0x0A // return character
 
-uint8_t is_ready; // Indicates whether or not to write to DAC
-uint32_t dac_in; // input value to DAC
+void setup_bt_uart();
+void setup_bluetooth();
+void write_string_uart(char *str);
+void write_bt_command(char * str);
 
-void setup_uart();
 
 #endif /* UART_H_ */

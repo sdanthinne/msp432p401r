@@ -4,10 +4,7 @@
  *  Created on: May 30, 2020
  *      Author: crapp
  */
-#include "msp.h"
-#include "DCO.h"
-#include "uart.h"
-#include "keypad.h"
+#include "bluetooth.h"
 
 void setup_bt_uart()
 {
@@ -49,13 +46,26 @@ void setup_bt_uart()
     EUSCI_A2->IE |= EUSCI_A_IE_RXIE; // enable receive interrupts
     NVIC->ISER[0] = 1 << (EUSCIA2_IRQn & 0x1F); //enable interrupts for EUSCI_A2
     __enable_irq(); // enable global interrupts
+
 }
 
 void setup_bluetooth()
 {
-    write_string_uart("Habe nun ach Philosophie Juristerei und Medizin"
-            " Und leider auch Theologie Durchaus studiert, mit heissem Bemuehn"); // Necessary to send a long string to wake up from sleep mode
-    write_bt_command("BAUD[0]");    // Sets the Baud rate to 9600
+    is_awake=0;
+    P4->DIR |= BIT1;
+    P4->SEL0 &= ~BIT1;
+    P4->SEL1 &= ~BIT1;
+    P4->OUT &= BIT1;
+//    write_string_uart("AT\r\n");
+    write_string_uart("AT+BAUD\r\n");
+    EUSCI_A0->TXBUF = " ";
+    EUSCI_A0->TXBUF = " ";
+//    write_bt_command("BAUD");
+//    write_bt_command("UARTMODE");
+//        while(!is_awake);
+//    write_string_uart("i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman\r\n"); // Necessary to send a long string to wake up from sleep mode
+//
+//    write_bt_command("BAUD[0]");    // Sets the Baud rate to 9600
 
 
 }
@@ -72,12 +82,14 @@ void write_string_uart(char *str)
 
         str+=sizeof(char);
     }
+
 }
 
 void write_bt_command(char * str)
 {
     write_string_uart("AT+");
     write_string_uart(str);
+    write_string_uart("\r\n");
 }
 
 
@@ -85,4 +97,5 @@ void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
     EUSCI_A0->TXBUF = read_val;
+    EUSCI_A2->IFG &= ~(EUSCI_A_IFG_RXIFG);
 }

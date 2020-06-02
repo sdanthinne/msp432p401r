@@ -19,16 +19,8 @@ void main(void)
     setup_bt_uart(); // Configure use of UART
     setup_bluetooth();
 
-    is_ready = 0;
-    dac_in = 0;
-
-    P1->DIR |= BIT0;
-    P1->SEL0 &= ~BIT0;
-    P1->SEL1 &= ~BIT0;
-    P1->OUT &= ~BIT0;
-
     while (1)
     {
-        write_string_uart("A");
+//        write_string_uart("A");
     }
 }

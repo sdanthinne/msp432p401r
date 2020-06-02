@@ -8,6 +8,8 @@
 #ifndef UART_H_
 #define UART_H_
 
+#include "msp.h"
+
 #define UCBRF__2 (2 << 4)
 #define UCBRF__10 (10 << 4)
 #define UCBRF__12 (12 << 4)
@@ -20,5 +22,6 @@ void setup_bluetooth();
 void write_string_uart(char *str);
 void write_bt_command(char * str);
 
+uint8_t is_awake;
 
 #endif /* UART_H_ */

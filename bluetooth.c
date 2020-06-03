@@ -27,9 +27,9 @@ void setup_bt_uart()
                          EUSCI_A_CTLW0_TXBRK | // next frame is not a  transmit break
                          EUSCI_A_CTLW0_TXADDR); // next frame is data
 
-    EUSCI_A2->CTLW0 |= EUSCI_A_CTLW0_SSEL__SMCLK | // select SMCLK as source
-                       EUSCI_A_CTLW0_PEN | // enable parity
-                       EUSCI_A_CTLW0_PAR; // use even parity
+    EUSCI_A2->CTLW0 |= EUSCI_A_CTLW0_SSEL__SMCLK; // select SMCLK as source
+                       //EUSCI_A_CTLW0_PEN | // enable parity
+                       //EUSCI_A_CTLW0_PAR; // use even parity
 
 
     // Baud rate configuration for 9600 bps with a 12 MHz clock
@@ -58,8 +58,8 @@ void setup_bluetooth()
     P4->OUT &= BIT1;
 //    write_string_uart("AT\r\n");
 //    write_string_uart("AT+BAUD\r\n\n");
-//    write_bt_command("BAUD");
-    write_bt_command("VERSION");
+     write_bt_command("BAUD");
+    //write_bt_command("VERSION");
 //    EUSCI_A0->TXBUF = " ";
 //    EUSCI_A0->TXBUF = " ";
 //    write_bt_command("BAUD");

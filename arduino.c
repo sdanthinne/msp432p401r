@@ -12,7 +12,7 @@
 /**
  * initializes the communication between the arduino and the MSP
  */
-void init_arduino()
+void setup_arduino()
 {
     setup_SPI_b0();
     set_SM_DCO();
@@ -20,15 +20,15 @@ void init_arduino()
 }
 
 /**
- * sends a 32 bit float
+ * sends a 32 bit float LSB first
  */
 void send_number(float number)
 {
-    u.f_val = number;//adding the number to the union
+    u._float = number;//adding the number to the union
     uint8_t i;
-    for(i=FLOAT_SIZE+1;i!=0;i--)
+    for(i=0;i<FLOAT_SIZE;i++)
     {
-        write_byte_b0(u.split_val[i-1]);
+        write_byte_b0(u._byte[i]);
     }
 }
 

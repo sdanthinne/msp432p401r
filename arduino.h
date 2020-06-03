@@ -11,11 +11,12 @@
 
 #define FLOAT_SIZE 4
 union float_split{
-    uint8_t split_val[4];
-    float f_val;
+    uint8_t _byte[4];
+    float _float;
+    uint32_t _int;
 } u;
 
-void init_arduino();
+void setup_arduino();
 
 void send_number(float number);
 

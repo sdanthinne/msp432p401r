@@ -8,6 +8,7 @@
 #include "msp.h"
 #include "uart.h"
 #include "DAC.h"
+#include "arduino.h"
 
 
 void main(void)
@@ -18,6 +19,7 @@ void main(void)
     setup_uart(); // Configure use of UART
     setup_bt_uart(); // Configure use of UART
     setup_bluetooth();
+    setup_arduino();
 
     while (1)
     {

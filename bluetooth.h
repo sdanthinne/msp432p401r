@@ -1,12 +1,12 @@
 /*
- * uart.h
+ * bluetooth.h
  *
  *  Created on: May 30, 2020
  *      Author: crapp
  */
 
-#ifndef UART_H_
-#define UART_H_
+#ifndef BLUETOOTH_H_
+#define BLUETOOTH_H_
 
 #include "msp.h"
 
@@ -19,9 +19,14 @@
 
 void setup_bt_uart();
 void setup_bluetooth();
-void write_string_uart(char *str);
 void write_bt_command(char * str);
+void write_string_bt(char *str);
 
+void read_bt_string();
 
+char bt_data[100];
+char bt_byte;
+char bt_str_rec;
+char bt_byte_rec;
 
-#endif /* UART_H_ */
+#endif /* BLUETOOTH_H_ */

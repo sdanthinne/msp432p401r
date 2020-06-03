@@ -53,9 +53,30 @@ void setup_uart()
     __enable_irq(); // enable global interrupts
 }
 
+void write_string_uart(char *str)
+{
+    while(*str!='\0')
+    {
+        EUSCI_A0->TXBUF = *str;
+        while(!(EUSCI_A0->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
+        str+=sizeof(char);
+    }
+}
+
+void read_string_uart()
+{
+
+
+}
+
 void EUSCIA0_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A0->RXBUF;
     EUSCI_A0->TXBUF = read_val;
     EUSCI_A2->TXBUF = read_val;
+    uart_byte = read_val;
+    if(read_val =='\n')
+    {
+        uart_str_rec = 1;
+    }
 }

@@ -7,6 +7,7 @@
 
 #include "msp.h"
 #include "uart.h"
+#include "bluetooth.h"
 #include "DAC.h"
 #include "arduino.h"
 
@@ -23,6 +24,6 @@ void main(void)
 
     while (1)
     {
-//        write_string_uart("A");
+        read_bt_string();
     }
 }

@@ -6,8 +6,6 @@
  */
 #include "bluetooth.h"
 
-uint8_t response_received;
-
 void setup_bt_uart()
 {
     // Configure Tx and Rx pins
@@ -77,37 +75,54 @@ void disconnect_bt()
 }
 
 
-void write_string_uart(char *str)
+void write_string_bt(char *str)
 {
     while(*str!='\0')
     {
         EUSCI_A2->TXBUF = *str;
         while(!(EUSCI_A2->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
-
-        EUSCI_A0->TXBUF = *str;
-        while(!(EUSCI_A0->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
-
         str+=sizeof(char);
     }
 }
 
 void write_bt_command(char * str)
 {
-    response_received = 0;
-    write_string_uart("AT+");
-    write_string_uart(str);
-    write_string_uart("\r\n");
-    while(!response_received);
+    bt_str_rec = 0;
+    write_string_bt("AT+");
+    write_string_bt(str);
+    write_string_bt("\r\n");
+    while(!bt_str_rec);
 }
 
+void read_bt_string()
+{
+    bt_str_rec = 0;
+    bt_byte_rec = 0;
+    uint8_t byte_count = 0;
+
+    while(!bt_str_rec)  // While not a string
+    {
+        while(!bt_byte_rec);    // Wait for byte received
+        bt_data[byte_count] = bt_byte;  // Add the recent data to the array
+        byte_count++;
+        EUSCI_A0->TXBUF = bt_byte;
+        bt_byte_rec = 0;
+
+    }
+    bt_data[byte_count] = bt_byte;  // Write the final character
+    bt_data[byte_count+1] = 0; // Null terminate the string
+    write_string_uart(bt_data);
+}
 
 void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
     EUSCI_A0->TXBUF = read_val;
+    bt_byte = read_val;
+    bt_byte_rec = 1;
     if(read_val =='\n')
     {
-        response_received = 1;
+        bt_str_rec = 1;
     }
 
 }

@@ -57,13 +57,16 @@ void setup_bluetooth()
     P4->SEL1 &= ~BIT1;
     P4->OUT &= BIT1;
 //    write_string_uart("AT\r\n");
-    write_string_uart("AT+BAUD\r\n");
-    EUSCI_A0->TXBUF = " ";
-    EUSCI_A0->TXBUF = " ";
+//    write_string_uart("AT+BAUD\r\n\n");
+//    write_bt_command("BAUD");
+    write_bt_command("VERSION");
+//    EUSCI_A0->TXBUF = " ";
+//    EUSCI_A0->TXBUF = " ";
 //    write_bt_command("BAUD");
 //    write_bt_command("UARTMODE");
 //        while(!is_awake);
-//    write_string_uart("i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman\r\n"); // Necessary to send a long string to wake up from sleep mode
+//    write_string_uart("i am ironman i am ironman i am ironman i am ironman"
+//    "i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman\r\n"); // Necessary to send a long string to wake up from sleep mode
 //
 //    write_bt_command("BAUD[0]");    // Sets the Baud rate to 9600
 
@@ -72,7 +75,7 @@ void setup_bluetooth()
 
 void write_string_uart(char *str)
 {
-    while(*str!=0)
+    while(*str!='\0')
     {
         EUSCI_A2->TXBUF = *str;
         while(!(EUSCI_A2->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
@@ -83,6 +86,7 @@ void write_string_uart(char *str)
         str+=sizeof(char);
     }
 
+
 }
 
 void write_bt_command(char * str)
@@ -90,6 +94,7 @@ void write_bt_command(char * str)
     write_string_uart("AT+");
     write_string_uart(str);
     write_string_uart("\r\n");
+
 }
 
 
@@ -97,5 +102,5 @@ void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
     EUSCI_A0->TXBUF = read_val;
-    EUSCI_A2->IFG &= ~(EUSCI_A_IFG_RXIFG);
+//    EUSCI_A2->IFG &= ~(EUSCI_A_IFG_RXIFG);
 }

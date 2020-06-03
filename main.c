@@ -16,20 +16,11 @@ void main(void)
 
     setup_DAC(); // configure use of SPI with the DAC
     setup_uart(); // Configure use of UART
-
-    is_ready = 0;
-    dac_in = 0;
-
-    P1->DIR |= BIT0;
-    P1->SEL0 &= ~BIT0;
-    P1->SEL1 &= ~BIT0;
-    P1->OUT &= ~BIT0;
+    setup_bt_uart(); // Configure use of UART
+    setup_bluetooth();
 
     while (1)
     {
-        while(!is_ready); // wait until the program read to write to DAC
-        write_DAC(dac_in);
-        dac_in = 0; // reset DAC input value
-        is_ready = 0;
+//        write_string_uart("A");
     }
 }

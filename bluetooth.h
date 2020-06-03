@@ -22,6 +22,6 @@ void setup_bluetooth();
 void write_string_uart(char *str);
 void write_bt_command(char * str);
 
-uint8_t is_awake;
+
 
 #endif /* UART_H_ */

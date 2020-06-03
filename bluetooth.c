@@ -6,6 +6,8 @@
  */
 #include "bluetooth.h"
 
+uint8_t response_received;
+
 void setup_bt_uart()
 {
     // Configure Tx and Rx pins
@@ -51,27 +53,29 @@ void setup_bt_uart()
 
 void setup_bluetooth()
 {
-    is_awake=0;
-    P4->DIR |= BIT1;
-    P4->SEL0 &= ~BIT1;
-    P4->SEL1 &= ~BIT1;
-    P4->OUT &= BIT1;
-//    write_string_uart("AT\r\n");
-//    write_string_uart("AT+BAUD\r\n\n");
-     write_bt_command("BAUD");
-    //write_bt_command("VERSION");
-//    EUSCI_A0->TXBUF = " ";
-//    EUSCI_A0->TXBUF = " ";
-//    write_bt_command("BAUD");
-//    write_bt_command("UARTMODE");
-//        while(!is_awake);
-//    write_string_uart("i am ironman i am ironman i am ironman i am ironman"
-//    "i am ironman i am ironman i am ironman i am ironman i am ironman i am ironman\r\n"); // Necessary to send a long string to wake up from sleep mode
-//
-//    write_bt_command("BAUD[0]");    // Sets the Baud rate to 9600
-
-
+    query_version();
 }
+
+void query_mac_address()
+{
+    write_bt_command("LADDR");
+}
+
+void query_version()
+{
+    write_bt_command("VERSION");
+}
+
+void query_baud()
+{
+    write_bt_command("BAUD");
+}
+
+void disconnect_bt()
+{
+    write_bt_command("DISC");
+}
+
 
 void write_string_uart(char *str)
 {
@@ -85,16 +89,15 @@ void write_string_uart(char *str)
 
         str+=sizeof(char);
     }
-
-
 }
 
 void write_bt_command(char * str)
 {
+    response_received = 0;
     write_string_uart("AT+");
     write_string_uart(str);
     write_string_uart("\r\n");
-
+    while(!response_received);
 }
 
 
@@ -102,5 +105,9 @@ void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
     EUSCI_A0->TXBUF = read_val;
-//    EUSCI_A2->IFG &= ~(EUSCI_A_IFG_RXIFG);
+    if(read_val =='\n')
+    {
+        response_received = 1;
+    }
+
 }

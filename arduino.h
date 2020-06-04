@@ -10,11 +10,7 @@
 #define ARDUINO_H_
 
 #define FLOAT_SIZE 4
-union float_split{
-    uint8_t _byte[4];
-    float _float;
-    uint32_t _int;
-} u;
+
 
 void setup_arduino();
 

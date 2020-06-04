@@ -121,14 +121,16 @@ void writeScreen()
 {
   cli();//disable interrupts
   float local = Float_type._float;//get the data quick
-  char number_as_str[20];
+  char number_as_str[50];
   uint16_t ratio;
   
   //drawBitmap(CENTER_X,CENTER_Y,163,15,gauge,data,0,7);
-  sprintf(number_as_str,"%f",local);
+  
+  //sprintf(number_as_str,"%f",local);
+  //Serial.println(local); 
   tft.print(number_as_str);
-  ratio = sine_table[(int)local];
-  tft.drawLine(CENTER_X,CENTER_Y,(DIAL_RADIUS*ratio)>>7+CENTER_X,(1-((DIAL_RADIUS*ratio)>>7))+CENTER_Y,RED);
+  //ratio = sine_table[(int)local];
+  //tft.drawLine(CENTER_X,CENTER_Y,(DIAL_RADIUS*ratio)>>7+CENTER_X,(1-((DIAL_RADIUS*ratio)>>7))+CENTER_Y,RED);
   
   //reset values
   Float_type._int=0;
@@ -141,6 +143,11 @@ void writeScreen()
 ISR (SPI_STC_vect)
 {
   byte data = SPDR;//get the data from the data register
+  char str[10];
+  //Serial.print(data);
+  sprintf(str,"%c",data);
+  
+  Serial.println(str);
   Float_type._byte[loadFlag] = data;
   //loadData.split_val[loadFlag] = data;
   //loadData|=(data<<(loadFlag*sizeof(char)));//fill the global var to the correct data

@@ -105,6 +105,8 @@ void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
     EUSCI_A0->TXBUF = read_val;
+    //write_byte_b0(read_val);
+
     if(read_val =='\n')
     {
         response_received = 1;

@@ -20,7 +20,8 @@ void main(void)
     setup_bt_uart(); // Configure use of UART
     setup_bluetooth();
     setup_arduino();
-
+    write_bt_command("TYPE2");
+    send_number(150.999);
     while (1)
     {
 //        write_string_uart("A");

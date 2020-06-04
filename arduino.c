@@ -24,6 +24,11 @@ void setup_arduino()
  */
 void send_number(float number)
 {
+    union float_split{
+        uint8_t _byte[4];
+        float _float;
+        uint32_t _int;
+    } u;
     u._float = number;//adding the number to the union
     uint8_t i;
     for(i=0;i<FLOAT_SIZE;i++)

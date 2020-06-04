@@ -56,7 +56,11 @@ void setup_uart()
 void EUSCIA0_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A0->RXBUF;
-    write_byte_b0(read_val);
     EUSCI_A0->TXBUF = read_val;
     //EUSCI_A2->TXBUF = read_val;
+    uart_byte = read_val;
+    if(read_val =='\n')
+    {
+        uart_str_rec = 1;
+    }
 }

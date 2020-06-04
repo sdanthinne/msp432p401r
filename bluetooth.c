@@ -4,6 +4,7 @@
  *  Created on: May 30, 2020
  *      Author: crapp
  */
+#include <stdio.h>
 #include "bluetooth.h"
 
 void setup_bt_uart()
@@ -46,7 +47,8 @@ void setup_bt_uart()
     EUSCI_A2->IE |= EUSCI_A_IE_RXIE; // enable receive interrupts
     NVIC->ISER[0] = 1 << (EUSCIA2_IRQn & 0x1F); //enable interrupts for EUSCI_A2
     __enable_irq(); // enable global interrupts
-
+    counter =0;
+    data_in._int =0;
 }
 
 void setup_bluetooth()
@@ -105,19 +107,35 @@ void read_bt_string()
         while(!bt_byte_rec);    // Wait for byte received
         bt_data[byte_count] = bt_byte;  // Add the recent data to the array
         byte_count++;
-        EUSCI_A0->TXBUF = bt_byte;
+        //EUSCI_A0->TXBUF = bt_byte;
         bt_byte_rec = 0;
 
     }
     bt_data[byte_count] = bt_byte;  // Write the final character
     bt_data[byte_count+1] = 0; // Null terminate the string
-    write_string_bt(bt_data);
+    write_UART_string(bt_data);
 }
 
 void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
-    EUSCI_A0->TXBUF = read_val;
+    //EUSCI_A0->TXBUF = read_val;
+
+    data_in._byte[counter%4]=read_val;
+    if(counter%4==3)
+    {
+        char string[20];
+        sprintf(string,"%d\n",data_in._int);
+        write_byte_b0(data_in._byte[3]);
+        write_byte_b0(data_in._byte[2]);
+        write_byte_b0(data_in._byte[1]);
+        write_byte_b0(data_in._byte[0]);
+        write_UART_string(string);
+        data_in._int=0;
+    }
+
+    counter++;
+
     bt_byte = read_val;
     bt_byte_rec = 1;
     if(read_val =='\n')

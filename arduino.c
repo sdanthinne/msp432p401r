@@ -22,19 +22,19 @@ void setup_arduino()
 /**
  * sends a 32 bit float LSB first
  */
-void send_number(float number)
+void send_number(int number)
 {
     union float_split{
         uint8_t _byte[4];
         float _float;
         uint32_t _int;
     } u;
-    u._int = (int) number*1024;//adding the number to the union
+    u._int = (int) number;//adding the number to the union
     uint8_t i;
-    for(i=0;i<FLOAT_SIZE;i++)
+    for(i=FLOAT_SIZE+1;i>0;i--)
     {
-        write_byte_b0(u._byte[i]);
-        delay_us(100000);
+        write_byte_b0(u._byte[i-1]);
+        //delay_us(100000);
     }
 }
 

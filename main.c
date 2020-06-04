@@ -22,9 +22,9 @@ void main(void)
     setup_bluetooth();
     setup_arduino();
     write_bt_command("TYPE2");
-    send_number(150.999);
+    //send_number(150.999);
     while (1)
     {
-        read_bt_string();
+        //read_bt_string();
     }
 }

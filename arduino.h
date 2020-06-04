@@ -14,7 +14,7 @@
 
 void setup_arduino();
 
-void send_number(float number);
+void send_number(int number);
 
 
 #endif /* ARDUINO_H_ */

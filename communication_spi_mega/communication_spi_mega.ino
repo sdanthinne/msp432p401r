@@ -46,7 +46,7 @@ volatile union Float_type{
 volatile uint8_t loadFlag;
 MCUFRIEND_kbv tft;
 uint16_t g_id;
-int32_t sine_table[SINE_TABLE_SIZE];//sine lut with 2048 precision
+float sine_table[SINE_TABLE_SIZE];//sine lut with 2048 precision
 
 /**
  * builds a LUT for a sine function
@@ -57,7 +57,7 @@ void buildLUT()
   uint16_t i;
   for(i=0;i<SINE_TABLE_SIZE;i++)
   {
-    sine_table[i] = 128*sin((360/2048)*((double)i));
+    sine_table[i] = sin((360/SINE_TABLE_SIZE)*((double)i));
   }
 }
 
@@ -88,12 +88,13 @@ void initTFT()
   g_id = tft.readID();//read the driver number from the tft module
   tft.begin(g_id);//begin the tft with specified driver number (should ensure cross- compat)
   tft.fillScreen(BLACK);
-  //tft.drawCircle(CENTER_X,CENTER_Y,50);//draws a circle specifying the circle radius
-  tft.setCursor(30,0);
+  tft.drawCircle(CENTER_X,CENTER_Y,50,WHITE);//draws a circle specifying the circle radius
+  tft.setCursor(0,0);
   tft.setTextColor(WHITE);
-  tft.setTextSize(3);
+  tft.setTextSize(2);
   tft.println("Wireless Angle Measurement Tool");
-  tft.println("waiting for data...");
+  //tft.println("waiting for data...");
+  tft.setTextSize(2);
 }
 
 
@@ -120,24 +121,34 @@ void drawBitmap(int x, int y, int sx, int sy, const uint16_t *data, int deg, int
 void writeScreen()
 {
   cli();//disable interrupts
-  uint32_t local = Float_type._int;//get the data quick
+  float local = ((float)(Float_type._int))/1024;//get the data quick
   char number_as_str[50];
-  uint16_t ratio;
+  float ratio;
+  Serial.println(local);
+
+  if(local>180)
+  {
+    local=0;
+  }
   
   //drawBitmap(CENTER_X,CENTER_Y,163,15,gauge,data,0,7);
   //Serial.println();
-  sprintf(number_as_str,"%c",Float_type._byte[0]);
-  Serial.println(number_as_str); 
-  sprintf(number_as_str,"%c",Float_type._byte[1]);
-  Serial.println(number_as_str); 
-  sprintf(number_as_str,"%c",Float_type._byte[2]);
-  Serial.println(number_as_str); 
-  sprintf(number_as_str,"%c",Float_type._byte[3]);
-  Serial.println(number_as_str); 
-  
-  tft.print(number_as_str);
-  //ratio = sine_table[(int)local];
-  //tft.drawLine(CENTER_X,CENTER_Y,(DIAL_RADIUS*ratio)>>7+CENTER_X,(1-((DIAL_RADIUS*ratio)>>7))+CENTER_Y,RED);
+//  sprintf(number_as_str,"%c",Float_type._byte[0]);
+//  Serial.println(number_as_str); 
+//  sprintf(number_as_str,"%c",Float_type._byte[1]);
+//  Serial.println(number_as_str); 
+//  sprintf(number_as_str,"%c",Float_type._byte[2]);
+//  Serial.println(number_as_str); 
+//  sprintf(number_as_str,"%c",Float_type._byte[3]);
+//  Serial.println(number_as_str); 
+  //Serial.println(local/1024);
+  tft.setCursor(0,450);
+
+  tft.fillRect(0,450,100,30,BLACK);
+  tft.print(local);
+
+  ratio = sine_table[(int)local];
+  tft.drawLine(CENTER_X,CENTER_Y,(int)(CENTER_X+(DIAL_RADIUS*ratio)),(int)(CENTER_Y+(DIAL_RADIUS*(1-ratio))),RED);
   
   //reset values
   Float_type._int=0;

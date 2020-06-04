@@ -24,9 +24,17 @@ void write_string_bt(char *str);
 
 void read_bt_string();
 
-char bt_data[100];
-char bt_byte;
-char bt_str_rec;
-char bt_byte_rec;
+volatile union data_in
+{
+    volatile uint32_t _int;
+    volatile uint8_t _byte[4];
+}data_in;
+
+volatile uint16_t counter;
+
+volatile char bt_data[100];
+volatile char bt_byte;
+volatile char bt_str_rec;
+volatile char bt_byte_rec;
 
 #endif /* BLUETOOTH_H_ */

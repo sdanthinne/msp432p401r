@@ -29,11 +29,12 @@ void send_number(float number)
         float _float;
         uint32_t _int;
     } u;
-    u._float = number;//adding the number to the union
+    u._int = (int) number*1024;//adding the number to the union
     uint8_t i;
     for(i=0;i<FLOAT_SIZE;i++)
     {
         write_byte_b0(u._byte[i]);
+        delay_us(100000);
     }
 }
 

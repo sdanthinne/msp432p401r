@@ -57,6 +57,8 @@ void EUSCIA0_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A0->RXBUF;
     EUSCI_A0->TXBUF = read_val;
+    //send_number(150.999);
+    write_byte_b0(read_val);
     //EUSCI_A2->TXBUF = read_val;
     uart_byte = read_val;
     if(read_val =='\n')

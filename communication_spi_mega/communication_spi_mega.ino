@@ -38,9 +38,9 @@
 #define SINE_TABLE_SIZE 1024
 
 volatile union Float_type{
-  uint8_t _byte[4];
-  float _float;
-  uint32_t _int;
+  volatile uint8_t _byte[4];
+  volatile float _float;
+  volatile uint32_t _int;
 }Float_type;
 
 volatile uint8_t loadFlag;
@@ -120,14 +120,21 @@ void drawBitmap(int x, int y, int sx, int sy, const uint16_t *data, int deg, int
 void writeScreen()
 {
   cli();//disable interrupts
-  float local = Float_type._float;//get the data quick
+  uint32_t local = Float_type._int;//get the data quick
   char number_as_str[50];
   uint16_t ratio;
   
   //drawBitmap(CENTER_X,CENTER_Y,163,15,gauge,data,0,7);
+  //Serial.println();
+  sprintf(number_as_str,"%c",Float_type._byte[0]);
+  Serial.println(number_as_str); 
+  sprintf(number_as_str,"%c",Float_type._byte[1]);
+  Serial.println(number_as_str); 
+  sprintf(number_as_str,"%c",Float_type._byte[2]);
+  Serial.println(number_as_str); 
+  sprintf(number_as_str,"%c",Float_type._byte[3]);
+  Serial.println(number_as_str); 
   
-  //sprintf(number_as_str,"%f",local);
-  //Serial.println(local); 
   tft.print(number_as_str);
   //ratio = sine_table[(int)local];
   //tft.drawLine(CENTER_X,CENTER_Y,(DIAL_RADIUS*ratio)>>7+CENTER_X,(1-((DIAL_RADIUS*ratio)>>7))+CENTER_Y,RED);
@@ -145,9 +152,9 @@ ISR (SPI_STC_vect)
   byte data = SPDR;//get the data from the data register
   char str[10];
   //Serial.print(data);
-  sprintf(str,"%c",data);
+  //sprintf(str,"%c",data);
   
-  Serial.println(str);
+  //Serial.println(str);
   Float_type._byte[loadFlag] = data;
   //loadData.split_val[loadFlag] = data;
   //loadData|=(data<<(loadFlag*sizeof(char)));//fill the global var to the correct data

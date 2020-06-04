@@ -111,7 +111,7 @@ void read_bt_string()
     }
     bt_data[byte_count] = bt_byte;  // Write the final character
     bt_data[byte_count+1] = 0; // Null terminate the string
-    write_string_uart(bt_data);
+    write_string_bt(bt_data);
 }
 
 void EUSCIA2_IRQHandler(void)

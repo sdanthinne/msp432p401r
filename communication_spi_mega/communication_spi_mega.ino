@@ -45,6 +45,8 @@ volatile union Float_type{
   volatile uint32_t _int;
 }Float_type;
 
+//uint8_t frame_buffer[320*480];//a simple frame buffer
+
 volatile uint8_t loadFlag;
 float oldAngle;
 MCUFRIEND_kbv tft;

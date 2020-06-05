@@ -30,7 +30,7 @@ volatile union data_in
     volatile uint8_t _byte[4];
 }data_in;
 
-volatile uint16_t counter;
+volatile uint16_t data_counter;
 
 volatile char bt_data[100];
 volatile char bt_byte;

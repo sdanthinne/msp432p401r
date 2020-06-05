@@ -2,7 +2,6 @@
 #include <MCUFRIEND_kbv.h>
 #include <avr/pgmspace.h>
 #include <UTFTGLUE.h>
-#include "math.h"
 #include "string.h"
 #include "gauge-needle-png-4.c"
 /**
@@ -32,10 +31,13 @@
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
+#define BACKGROUND_COLOR BLACK
+
 #define CENTER_X (320/2)
 #define CENTER_Y (480/2) 
 #define DIAL_RADIUS 50 //radius of the dial
-#define SINE_TABLE_SIZE 1024
+#define SINE_TABLE_SIZE 360
+#define SINE_TABLE_FACTOR 512
 
 volatile union Float_type{
   volatile uint8_t _byte[4];
@@ -44,9 +46,10 @@ volatile union Float_type{
 }Float_type;
 
 volatile uint8_t loadFlag;
+float oldAngle;
 MCUFRIEND_kbv tft;
 uint16_t g_id;
-float sine_table[SINE_TABLE_SIZE];//sine lut with 2048 precision
+float sin_table[SINE_TABLE_SIZE];//sine lut with 2048 precision
 
 /**
  * builds a LUT for a sine function
@@ -57,7 +60,7 @@ void buildLUT()
   uint16_t i;
   for(i=0;i<SINE_TABLE_SIZE;i++)
   {
-    sine_table[i] = sin((360/SINE_TABLE_SIZE)*((double)i));
+    sin_table[i] = (float)(sin(((float)i)*(PI/180)));
   }
 }
 
@@ -72,11 +75,12 @@ void initSPI()
   SPI.setBitOrder(MSBFIRST);
   SPI.setDataMode(SPI_MODE3);//ckpl=1, cphase = 0 output edge = rising, data capture = falling
   bitSet(SPCR, 7); //enable SPI interrupts
-  bitSet(SPCR,SPR1);
-  bitSet(SPCR,SPR0);//div by 128
+//  bitSet(SPCR,SPR1);
+//  bitSet(SPCR,SPR0);//div by 128
   bitSet(SPCR,SPE);//enable 
   loadFlag=0;
   Float_type._int=0;
+  sei();//enable interrupts
 }
 
 /**
@@ -87,14 +91,15 @@ void initTFT()
   tft.reset();
   g_id = tft.readID();//read the driver number from the tft module
   tft.begin(g_id);//begin the tft with specified driver number (should ensure cross- compat)
-  tft.fillScreen(BLACK);
+  tft.fillScreen(BACKGROUND_COLOR);
   tft.drawCircle(CENTER_X,CENTER_Y,50,WHITE);//draws a circle specifying the circle radius
   tft.setCursor(0,0);
   tft.setTextColor(WHITE);
   tft.setTextSize(2);
-  tft.println("Wireless Angle Measurement Tool");
+  tft.println("Wireless Angle \nMeasurement Tool");
   //tft.println("waiting for data...");
   tft.setTextSize(2);
+  oldAngle=0;
 }
 
 
@@ -110,8 +115,34 @@ void drawBitmap(int x, int y, int sx, int sy, const uint16_t *data, int deg, int
   int tx, ty, newx, newy;
   double radian;
   radian = deg*0.0175;
-  
-  
+  for(ty=0;ty<sy;ty++)
+  {
+    for(tx=0;tx<sx;tx++)
+    {
+      color = pgm_read_word(data+(ty*sx)+tx);
+      newx=x+rox+(((tx-rox)*cos(radian))-((ty-roy)*sin_table[(int)((radian/(2*PI))*360)]));
+      newy=y+roy+(((ty-roy)*cos(radian))+((tx-rox)*sin_table[(int)((radian/(2*PI))*360)]));
+      tft.drawPixel(newx,newy,color);
+    }
+  }
+}
+
+void clearBitmap(int x, int y, int sx, int sy, const uint16_t *data, int deg, int rox, int roy)
+{
+  unsigned int color;
+  int tx, ty, newx, newy;
+  double radian;
+  radian = deg*0.0175;
+  for(ty=0;ty<sy;ty++)
+  {
+    for(tx=0;tx<sx;tx++)
+    {
+      color = BACKGROUND_COLOR;
+      newx=x+rox+(((tx-rox)*cos(radian))-((ty-roy)*sin_table[(int)((radian/(2*PI))*360)]));
+      newy=y+roy+(((ty-roy)*cos(radian))+((tx-rox)*sin_table[(int)((radian/(2*PI))*360)]));
+      tft.drawPixel(newx,newy,color);
+    }
+  }
 }
 
 /**
@@ -120,39 +151,35 @@ void drawBitmap(int x, int y, int sx, int sy, const uint16_t *data, int deg, int
  */
 void writeScreen()
 {
-  cli();//disable interrupts
+  //cli();//disable interrupts
   float local = ((float)(Float_type._int))/1024;//get the data quick
   char number_as_str[50];
   float ratio;
-  Serial.println(local);
+  //Serial.println(local);
 
-  if(local>180)
+  if(local<180&&local!=0)
   {
-    local=0;
+    clearBitmap(CENTER_X,CENTER_Y,61,6,gauge,oldAngle,0,3);
+    oldAngle = local;
+    tft.drawCircle(CENTER_X,CENTER_Y,50,WHITE);
+
+    drawBitmap(CENTER_X,CENTER_Y,61,6,gauge,local,0,3);
+
+    tft.setCursor(0,450);
+
+    tft.fillRect(0,450,320,30,BLACK);
+    tft.print(local);
   }
   
-  //drawBitmap(CENTER_X,CENTER_Y,163,15,gauge,data,0,7);
-  //Serial.println();
-//  sprintf(number_as_str,"%c",Float_type._byte[0]);
-//  Serial.println(number_as_str); 
-//  sprintf(number_as_str,"%c",Float_type._byte[1]);
-//  Serial.println(number_as_str); 
-//  sprintf(number_as_str,"%c",Float_type._byte[2]);
-//  Serial.println(number_as_str); 
-//  sprintf(number_as_str,"%c",Float_type._byte[3]);
-//  Serial.println(number_as_str); 
-  //Serial.println(local/1024);
-  tft.setCursor(0,450);
 
-  tft.fillRect(0,450,100,30,BLACK);
-  tft.print(local);
+  //ratio = sin_table[(int)local];
 
-  ratio = sine_table[(int)local];
-  tft.drawLine(CENTER_X,CENTER_Y,(int)(CENTER_X+(DIAL_RADIUS*ratio)),(int)(CENTER_Y+(DIAL_RADIUS*(1-ratio))),RED);
+  
+  //tft.drawLine(CENTER_X,CENTER_Y,(int)(CENTER_X+(DIAL_RADIUS*ratio)),(int)(CENTER_Y+(DIAL_RADIUS*(ratio))),RED);
   
   //reset values
   Float_type._int=0;
-  sei();//re-enable interrupts
+  //sei();//re-enable interrupts
 }
 
 /**
@@ -176,9 +203,12 @@ ISR (SPI_STC_vect)
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  buildLUT();
   initSPI();
   initTFT();
-  buildLUT();
+  
+  //drawBitmap(CENTER_X,CENTER_Y,61,6,gauge,0,0,3);
+
 }
 
 void loop() {

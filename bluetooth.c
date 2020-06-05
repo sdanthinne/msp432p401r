@@ -47,7 +47,7 @@ void setup_bt_uart()
     EUSCI_A2->IE |= EUSCI_A_IE_RXIE; // enable receive interrupts
     NVIC->ISER[0] = 1 << (EUSCIA2_IRQn & 0x1F); //enable interrupts for EUSCI_A2
     __enable_irq(); // enable global interrupts
-    counter =0;
+    data_counter =0;
     data_in._int =0;
 }
 
@@ -120,21 +120,26 @@ void EUSCIA2_IRQHandler(void)
 {
     uint8_t read_val = EUSCI_A2->RXBUF;
     //EUSCI_A0->TXBUF = read_val;
+    //write_byte_b0(read_val);
 
-    data_in._byte[counter%4]=read_val;
-    if(counter%4==3)
+    data_in._byte[data_counter%4]=read_val;
+    if(data_counter%4==3)
     {
-        char string[20];
-        sprintf(string,"%d\n",data_in._int);
-        write_byte_b0(data_in._byte[3]);
-        write_byte_b0(data_in._byte[2]);
-        write_byte_b0(data_in._byte[1]);
-        write_byte_b0(data_in._byte[0]);
-        write_UART_string(string);
+        //char string[20];
+        //sprintf(string,"%u\n",data_in._int/1024);
+
+        //__disable_irq();
+        send_number(data_in._int);
+//        write_byte_b0(local_var._byte[3]);
+//        write_byte_b0(local_var._byte[2]);
+//        write_byte_b0(local_var._byte[1]);
+//        write_byte_b0(local_var._byte[0]);
+        //__enable_irq();
+        //write_UART_string(string);
         data_in._int=0;
     }
 
-    counter++;
+    data_counter++;
 
     bt_byte = read_val;
     bt_byte_rec = 1;

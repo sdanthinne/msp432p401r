@@ -33,7 +33,6 @@ void setup_SPI_b0()
  */
 void write_byte_b0(uint8_t byte)
 {
-
     while ((~(EUSCI_B0_SPI->IFG & BIT1)) & BIT1);
     EUSCI_B0_SPI -> TXBUF = byte; //put in the data to the buffer
 }

@@ -14,11 +14,9 @@ void main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // stop watchdog timer
 
-    setup_DAC(); // configure use of SPI with the DAC
+    //setup_DAC(); // configure use of SPI with the DAC
     setup_uart(); // Configure use of UART
-
-    is_ready = 0;
-    dac_in = 0;
+    setup_ADC();
 
     P1->DIR |= BIT0;
     P1->SEL0 &= ~BIT0;
@@ -28,8 +26,6 @@ void main(void)
     while (1)
     {
         while(!is_ready); // wait until the program read to write to DAC
-        write_DAC(dac_in);
-        dac_in = 0; // reset DAC input value
-        is_ready = 0;
+
     }
 }

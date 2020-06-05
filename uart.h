@@ -16,9 +16,6 @@
 #define NL 0x0A // return character
 #define CR 0x0D // carriage-return character
 
-uint8_t is_ready; // Indicates whether or not to write to DAC
-uint32_t dac_in; // input value to DAC
-
 void setup_uart();
 
 #endif /* UART_H_ */

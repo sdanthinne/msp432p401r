@@ -55,20 +55,17 @@ void setup_uart()
 
 void write_UART_string(char * str)
 {
-<<<<<<< HEAD
     while(*str!='\0')
     {
         EUSCI_A0->TXBUF = *str;
         while(!(EUSCI_A0->IFG & UCTXIFG)); // Wait for txbuf to be ready to receive another character
         str+=sizeof(char);
-=======
     uint8_t read_val = EUSCI_A0->RXBUF;
     if ((read_val == NL) || (read_val == CR))
     {
         is_ready = 1; // now ready to write value to DAC
         EUSCI_A0->TXBUF = NL; // echo user input back to terminal
         EUSCI_A0->TXBUF = CR;
->>>>>>> 1ea51b90a2f37732c104da3bf2d8d8670cf06f9b
     }
 }
 

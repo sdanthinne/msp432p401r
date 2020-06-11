@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /*
  * main.c
  *
@@ -19,7 +18,6 @@ void main(void)
 
     //setup_DAC(); // configure use of SPI with the DAC
     setup_uart(); // Configure use of UART
-<<<<<<< HEAD
     setup_bt_uart(); // Configure use of UART
     setup_bluetooth();
     setup_arduino();
@@ -28,7 +26,6 @@ void main(void)
     while (1)
     {
         //read_bt_string();
-=======
     setup_ADC();
 
     P1->DIR |= BIT0;
@@ -40,7 +37,6 @@ void main(void)
     {
         while(!is_ready); // wait until the program read to write to DAC
 
->>>>>>> 1ea51b90a2f37732c104da3bf2d8d8670cf06f9b
     }
 
 }

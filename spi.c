@@ -13,6 +13,11 @@ void setup_SPI_b0()
 {
     EUSCI_B0_SPI->CTLW0 |= BIT0; //enable editing of settings/halt the data transmission
 
+    P4->DIR|=BIT1;//set to output
+    P4->SEL0&=~(BIT1);//set to GPIO
+    P4->SEL1&=~(BIT1);
+    P4->OUT&=~(BIT1);
+
     P1->DIR|=BIT6|BIT5;
     P1->SEL0|=BIT6 | BIT5;//set to primary function (UCB0SIMO)(UCB0CLK)
 
@@ -23,7 +28,8 @@ void setup_SPI_b0()
             EUSCI_B_CTLW0_SSEL__SMCLK | // set to use the smclk
             EUSCI_B_CTLW0_CKPL); //3 pin spi
 
-    EUSCI_B0_SPI->BRW = 0x0060;//set the bitrate to go at SMCLK (0)
+
+    EUSCI_B0_SPI->BRW = 0x00;//set the bitrate to go at SMCLK (0)
 
     EUSCI_B0_SPI->CTLW0 &= ~BIT0;//re-enable data transmission
 }

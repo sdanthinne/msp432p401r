@@ -1,10 +1,11 @@
 #include "keypad.h"
+#include "fgen.h"
 
 /*
  * keypad.c
  *
  *  Created on: Apr 19, 2020
- *      Author: Aknapen,sdanthinne
+ *      Author: aknapen,sdanthinne,crapp
  */
 
 void setup_keypad()
@@ -15,6 +16,18 @@ void setup_keypad()
     P5->SEL0&=~(BIT0|BIT1|BIT2|BIT4|BIT5|BIT6|BIT7);//GPIO
     P5->SEL0&=~(BIT0|BIT1|BIT2|BIT4|BIT5|BIT6|BIT7);//GPIO
     P5->REN|=(BIT4|BIT5|BIT6|BIT7);                 //enable pullup/pulldown
+
+    P5->IES &= ~BIT0; // interrupt on low-to-high transition
+    P5->IFG &= ~(BIT4 | BIT5 | BIT6 | BIT7); // Clear P5.4-5.7 interrupt flags
+    P5->IE |= (BIT4 | BIT5 | BIT6 | BIT7); // Enable P5.4-5.7 interrupts
+
+    // Enable Port 5 on NVIC
+    NVIC->ISER[1] = 1 << (31 & (PORT5_IRQn));
+
+    // Set interrupt priority of P5 to 0 (highest)
+    NVIC->IP[9] &= ~(BIT(31) | BIT(30) | BIT(29) | BIT(28) |
+                     BIT(27) | BIT(26) | BIT(25) | BIT(24));
+    P5->OUT|=(BIT0|BIT1|BIT2);
 }
 
 /**
@@ -24,7 +37,7 @@ void setup_keypad()
 uint8_t has_press()
 {
     P5->OUT|=(BIT0|BIT1|BIT2);              //sets all of the outputs to high
-    return (P5->IN&(BIT4|BIT5|BIT6|BIT7));  //returns the row values or'd together(unique value for each row)
+    return (P5->IN&(BIT4|BIT5|BIT6|BIT7));  //returns the row values or'd together
 }
 
 /**
@@ -34,23 +47,31 @@ uint8_t get_key_pressed()
 {
     uint8_t i;
     uint8_t val;
+    P5->OUT&=~(BIT0|BIT1|BIT2);
     for (i = 0; i < 3; i++) {
         P5->OUT = (1 << i)|(P5->OUT&BIT3);                  //toggles the right ones on
-        if ((P5->IN & (BIT4|  BIT5 | BIT6 | BIT7)) != 0)    //if the rows are not zero, if there is keypress
+        //if the rows are not zero, if there is keypress
+        if ((P5->IN & (BIT4|  BIT5 | BIT6 | BIT7)) != 0)
         {
             val = (P5->IN | P5->OUT) & ~BIT3;
+            P5->OUT|=(BIT0|BIT1|BIT2);
             return val;              // returns ROW/COLUMN value of key pressed
         }
     }
+    P5->OUT|=(BIT0|BIT1|BIT2);
     return 0;
 }
 
+/**
+ * Debouncing method for getting the input of the keypad.
+ *
+ */
 uint8_t update_key_press(uint8_t prev_key)
 {
 
     uint8_t curr_key_check= get_key_pressed();
     uint8_t curr_key_val = curr_key_check;
-    uint8_t i, counter;
+    uint8_t counter;
     uint8_t true_button = 0, false_button = 0;
 
     while(!true_button)
@@ -172,4 +193,103 @@ uint8_t get_number_pressed(uint8_t key)
         default:
             return 0x23;
     }
+}
+
+void PORT5_IRQHandler(void)
+{
+    uint8_t key_press = 0; // initially, we have no key press
+    uint8_t key_val;
+
+    key_press = update_key_press(key_press); // get new key pressed
+    key_val = get_number_pressed(key_press); // get value of the key pressed
+
+    switch(key_press)
+    {
+        case KEY_ONE:
+            frequency = 100; // Set 100 Hz frequency
+            break;
+        case KEY_TWO:
+            frequency = 200; // Set 200 Hz frequency
+            break;
+        case KEY_THREE:
+            frequency = 300; // Set 300 Hz frequency
+            break;
+        case KEY_FOUR:
+            frequency = 400; // Set 400 Hz frequency
+            break;
+        case KEY_FIVE:
+            frequency = 500; // Set 500 Hz frequency
+            break;
+        case KEY_SIX:
+            if(wave_type&TRIANGLE_WAVE)
+            {
+                wave_count--;
+            }
+            else
+            {
+                wave_count++;
+            }
+            wave_type ^= TRIANGLE_WAVE; // use triangle wave
+            break;
+        case KEY_SEVEN:
+            if(wave_type&SQUARE_WAVE)
+            {
+                wave_count--;
+            }
+            else
+            {
+                wave_count++;
+            }
+            wave_type ^= SQUARE_WAVE; // use square wave
+            break;
+        case KEY_EIGHT:
+            if(wave_type&SINE_WAVE)
+            {
+                wave_count--;
+            }
+            else
+            {
+                wave_count++;
+            }
+            wave_type ^= SINE_WAVE; // use sine wave
+            break;
+        case KEY_NINE:
+            if(wave_type&SAWTOOTH_WAVE)
+            {
+                wave_count--;
+            }
+            else
+            {
+                wave_count++;
+            }
+            wave_type ^= SAWTOOTH_WAVE; // use sawtooth wave
+            break;
+        case KEY_STAR:
+            if (wave_type & SQUARE_WAVE)
+            {
+                /* If wave is a square wave, decrease duty cycle by 10%
+                 * (use 10% as minimum)
+                 */
+                duty_cycle = (duty_cycle == 1) ? 1 : duty_cycle-1;
+            }
+            break;
+        case KEY_POUND:
+            if (wave_type & SQUARE_WAVE)
+            {
+                /* If wave is a square wave, increase duty cycle by 10%
+                 * (use 90% as maximum)
+                 */
+                duty_cycle = (duty_cycle == 9) ? 9 : duty_cycle+1;
+            }
+            break;
+        case KEY_ZERO:
+            // If wave is a square wave, reset duty cycle to 50%
+            duty_cycle = 5;
+            frequency = 100;
+            wave_type = SQUARE_WAVE;
+            wave_count = 1;
+            break;
+    }
+    P5->IFG &= ~(BIT4 | BIT5 | BIT6 | BIT7); // clear the interrupt flags
+
 }

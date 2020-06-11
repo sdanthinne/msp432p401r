@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * main.c
  *
@@ -27,4 +28,5 @@ void main(void)
     {
         //read_bt_string();
     }
+
 }

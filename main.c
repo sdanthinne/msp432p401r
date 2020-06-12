@@ -32,4 +32,14 @@ void main(void)
     if (adc_val >= 0x3F00) {
         P1->OUT |= BIT0;
     }
+
+    while(1)
+    {
+        if(adc_flag)
+        {
+            adc_flag = 0;
+            ADC14->CTL0 |= ADC14_CTL0_SC;
+        }
+    }
+
 }

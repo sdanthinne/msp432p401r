@@ -29,6 +29,8 @@ void setup_ADC()
                      ADC14_CTL1_DF | // read data as unsigned binary
                      ADC14_CTL1_CSTARTADD_MASK); // use ADC14MEM0 for conversion memory register
 
+    ADC14->IER0 |= ADC14_IER0_IE0; // Enable ADC interrupts on A0
+
     /*
      *  disable window comparator
      *  use single-ended mode
@@ -45,7 +47,8 @@ void setup_ADC()
  */
 void ADC14_IRQHandler(void)
 {
-
+    static ADC_val = ADC14->MEM[0];
+    adc_flag = 0;
 }
 
 uint16_t read_ADC()

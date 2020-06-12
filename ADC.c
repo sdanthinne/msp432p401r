@@ -1,5 +1,5 @@
 #include "ADC.h"
-#include "delay.h"
+
 /*
  * ADC.c
  *
@@ -51,7 +51,7 @@ void ADC14_IRQHandler(void)
 {
     static uint16_t ADC_val = 0;
     ADC_val = ADC14->MEM[0];
-    P1->OUT ^= BIT0;
+    write_UART_16bitnum(ADC_val);
     adc_flag = 1;
 }
 

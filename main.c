@@ -29,7 +29,6 @@ void main(void)
     P1->DIR |= BIT0;
     P1->OUT &= ~BIT0;
 
-//    adc_val = read_ADC();
     while(1)
     {
         if(adc_flag)

@@ -9,7 +9,8 @@
 #define ADC_H_
 
 #include "msp.h"
-
+#include "delay.h"
+#include "uart.h"
 void setup_ADC();
 uint16_t read_ADC();
 

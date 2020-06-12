@@ -70,6 +70,24 @@ void write_UART_string(char * str)
 }
 }
 
+void write_UART_16bitnum(uint16_t value)
+{
+    uint8_t i;
+    char split_val[5];
+    split_val[4] = value% 10;
+    split_val[3] = (value / 10) % 10;
+    split_val[2] = (value / 100) % 10;
+    split_val[1] = (value / 1000) % 10;
+    split_val[0] = (value / 10000) % 10;
+    for(i=0; i<5; i++)
+    {
+        EUSCI_A0->TXBUF = 0x31;
+        while(!(EUSCI_A0->IFG & UCTXIFG));
+    }
+//    EUSCI_A0->TXBUF = NL;
+//    EUSCI_A0->TXBUF = CR;
+}
+
 void EUSCIA0_IRQHandler()
 {
     uint8_t read_val = EUSCI_A0->RXBUF;

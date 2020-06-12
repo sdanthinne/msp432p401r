@@ -21,6 +21,7 @@
 void setup_uart();
 void write_string_uart(char *str);
 void read_string_uart();
+void write_UART_16bitnum(uint16_t value);
 
 char uart_byte;
 uint8_t uart_ready;

@@ -4,7 +4,7 @@
  * timer.c
  *
  *  Created on: Apr 20, 2020
- *      Author: Alexander
+ *      Author: aknapen, crapp, sdanthinne
  */
 
 

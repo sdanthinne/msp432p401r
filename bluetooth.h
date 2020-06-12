@@ -2,7 +2,7 @@
  * bluetooth.h
  *
  *  Created on: May 30, 2020
- *      Author: crapp
+ *      Author: aknapen, crapp, sdanthinne
  */
 
 #ifndef BLUETOOTH_H_

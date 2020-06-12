@@ -2,7 +2,7 @@
  * DAC.h
  *
  *  Created on: May 7, 2020
- *      Author: sdanthinne
+ *     Author: aknapen, crapp, sdanthinne
  */
 
 #ifndef DAC_H_

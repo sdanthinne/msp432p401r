@@ -2,7 +2,7 @@
  * uart.c
  *
  *  Created on: May 30, 2020
- *      Author: crapp
+ *      Author: aknapen, crapp, sdanthinne
  */
 #include <stdio.h>
 #include "bluetooth.h"

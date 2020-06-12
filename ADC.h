@@ -2,7 +2,7 @@
  * ADC.h
  *
  *  Created on: Jun 5, 2020
- *      Author: sdanthinne
+ *      Author: aknapen, crapp, sdanthinne
  */
 
 #ifndef ADC_H_

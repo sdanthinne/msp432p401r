@@ -2,7 +2,7 @@
  * spi.h
  *
  *  Created on: May 6, 2020
- *      Author: sdanthinne
+ *      Author: aknapen, crapp, sdanthinne
  */
 
 #ifndef SPI_H_

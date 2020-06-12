@@ -2,7 +2,7 @@
  * ADC.c
  *
  *  Created on: Jun 5, 2020
- *      Author: sdanthinne
+ *      Author: sdanthinne, aknapen, crapp
  */
 
 void setup_ADC()

@@ -2,7 +2,7 @@
  * arduino.h
  *
  *  Created on: Jun 2, 2020
- *      Author: sdanthinne
+ *      Author: aknapen, crapp, sdanthinne
  *      communicates with a ATMega 2560 over SPI
  */
 

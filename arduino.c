@@ -6,7 +6,7 @@
  * arduino.c
  *
  *  Created on: Jun 2, 2020
- *      Author: sdanthinne
+ *      Author: aknapen, crapp, sdanthinne
  */
 
 /**

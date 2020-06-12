@@ -5,7 +5,7 @@
  * DAC.c
  *
  *  Created on: May 7, 2020
- *      Author: sdanthinne
+ *      Author: aknapen, crapp, sdanthinne
  *      to be used with the MCP4912
  ,*/
 

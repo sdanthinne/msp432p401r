@@ -29,6 +29,8 @@ void setup_ADC()
                      ADC14_CTL1_DF | // read data as unsigned binary
                      ADC14_CTL1_CSTARTADD_MASK); // use ADC14MEM0 for conversion memory register
 
+    __enable_irq(); // enable global interrupts
+    NVIC->ISER[0] |= 1 << (ADC14_IRQn & 0x1F);
     ADC14->IER0 |= ADC14_IER0_IE0; // Enable ADC interrupts on A0
 
     /*
@@ -39,7 +41,7 @@ void setup_ADC()
      */
     ADC14->MCTL[0] = 0;
 
-    ADC14->CTL0 |= ADC14_CTL0_ENC; // re-enable conversion after setup
+    ADC14->CTL0 |= ADC14_CTL0_SC | ADC14_CTL0_ENC; // re-enable conversion after setup
 }
 
 /**
@@ -47,8 +49,10 @@ void setup_ADC()
  */
 void ADC14_IRQHandler(void)
 {
-    static ADC_val = ADC14->MEM[0];
-    adc_flag = 0;
+    static uint16_t ADC_val = 0;
+    ADC_val = ADC14->MEM[0];
+    P1->OUT ^= BIT0;
+    adc_flag = 1;
 }
 
 uint16_t read_ADC()

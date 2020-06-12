@@ -11,6 +11,7 @@
 #include "DAC.h"
 #include "arduino.h"
 #include "ADC.h"
+#include "delay.h"
 
 
 void main(void)
@@ -28,11 +29,7 @@ void main(void)
     P1->DIR |= BIT0;
     P1->OUT &= ~BIT0;
 
-    adc_val = read_ADC();
-    if (adc_val >= 0x3F00) {
-        P1->OUT |= BIT0;
-    }
-
+//    adc_val = read_ADC();
     while(1)
     {
         if(adc_flag)

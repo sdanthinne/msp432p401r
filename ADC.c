@@ -49,17 +49,22 @@ void setup_ADC()
  */
 void ADC14_IRQHandler(void)
 {
-    static uint16_t ADC_val = 0;
-    ADC_val = ADC14->MEM[0];
-    write_UART_16bitnum(ADC_val);
+    adc_val = ADC14->MEM[0];
+//    write_UART_16bitnum(ADC_val);
     adc_flag = 1;
+}
+
+uint32_t calibrated_adc_voltage(void)
+{
+    return calibration_slope*adc_val - calibration_offset;
 }
 
 uint16_t read_ADC()
 {
-    ADC14->CTL0 |= ADC14_CTL0_SC; // start ADC conversion
-
-    while(!(ADC14->CTL0 & ADC14_CTL0_BUSY) != 0); // wait until value has been converted
-
-    return ADC14->MEM[0]; // extract conversion value from memory
+    return adc_val;
+//    ADC14->CTL0 |= ADC14_CTL0_SC; // start ADC conversion
+//
+//    while(!(ADC14->CTL0 & ADC14_CTL0_BUSY) != 0); // wait until value has been converted
+//
+//    return ADC14->MEM[0]; // extract conversion value from memory
 }

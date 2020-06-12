@@ -67,13 +67,15 @@ void write_UART_string(char * str)
         EUSCI_A0->TXBUF = NL; // echo user input back to terminal
         EUSCI_A0->TXBUF = CR;
     }
-}
+    }
 }
 
 void write_UART_16bitnum(uint16_t value)
 {
     uint8_t i;
-    char split_val[5];
+    uint8_t split_val[5];
+    uint8_t byte_to_write;
+
     split_val[4] = value% 10;
     split_val[3] = (value / 10) % 10;
     split_val[2] = (value / 100) % 10;
@@ -81,7 +83,8 @@ void write_UART_16bitnum(uint16_t value)
     split_val[0] = (value / 10000) % 10;
     for(i=0; i<5; i++)
     {
-        EUSCI_A0->TXBUF = split_val[i] + 0x30;
+        byte_to_write = split_val[i] + 0x30;
+        EUSCI_A0->TXBUF = byte_to_write;
         while(!(EUSCI_A0->IFG & UCTXIFG));
     }
     EUSCI_A0->TXBUF = NL;

@@ -12,7 +12,8 @@ void setup_ADC()
     ADC14->CTL0 &= ~ADC14_CTL0_ENC; // disable conversion during setup
 
     ADC14->CTL0 |= ADC14_CTL0_ON | // turn on ADC
-                   ADC14_CTL0_SHP |
+                   ADC14_CTL0_SHP | // SAMPCON signal is sourced from the sampling time
+                   ADC14_CTL0_SHT0_0 | // 4 cycle sample-hold time
                    ADC14_CTL0_SSEL__SMCLK | // use SMCLK as ADC clk src
                    ADC14_CTL0_PDIV__4; // predivide ADC clk by 4
 

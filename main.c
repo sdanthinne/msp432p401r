@@ -26,7 +26,7 @@ void main(void)
     P1->SEL0 &= ~BIT0;
     P1->SEL1 &= ~BIT0;
     P1->DIR |= BIT0;
-    P1->OUT |= BIT0;
+    P1->OUT &= ~BIT0;
 
     while(1)
     {

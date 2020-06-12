@@ -50,7 +50,7 @@ void setup_ADC()
 void ADC14_IRQHandler(void)
 {
     adc_val = ADC14->MEM[0];
-//    write_UART_16bitnum(ADC_val);
+//    write_UART_16bitnum(adc_val);
     adc_flag = 1;
 }
 

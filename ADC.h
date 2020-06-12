@@ -12,11 +12,12 @@
 #include "delay.h"
 #include "uart.h"
 
-#define calibration_slope 0
-#define calibration_offset 0
+#define calibration_slope 201
+#define calibration_offset 9300
 
 void setup_ADC();
 uint16_t read_ADC();
+uint32_t calibrated_adc_voltage(void);
 
 /*
  * Returns a calibrated voltage from adc input in uV

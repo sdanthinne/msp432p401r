@@ -18,6 +18,7 @@ void main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // stop watchdog timer
     uint16_t adc_val;
+    uint32_t calibrated_voltage;
 
     P5->SEL0 |= BIT5;
     P5->SEL1 |= BIT5; // P5.5 becomes A0
@@ -34,6 +35,9 @@ void main(void)
     {
         if(adc_flag)
         {
+            delay_us(1000000); // 1 s delay
+            calibrated_voltage = calibrated_adc_voltage();
+            write_UART_32bitnum(calibrated_voltage);
             adc_flag = 0;
             ADC14->CTL0 |= ADC14_CTL0_SC;
         }

@@ -23,6 +23,7 @@ void write_string_uart(char *str);
 void read_string_uart();
 
 char uart_byte;
+uint8_t uart_ready;
 uint8_t uart_str_rec;
 
 #endif /* UART_H_ */

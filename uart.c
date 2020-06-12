@@ -63,13 +63,14 @@ void write_UART_string(char * str)
     uint8_t read_val = EUSCI_A0->RXBUF;
     if ((read_val == NL) || (read_val == CR))
     {
-        is_ready = 1; // now ready to write value to DAC
+        uart_ready = 1; // now ready to write value to DAC
         EUSCI_A0->TXBUF = NL; // echo user input back to terminal
         EUSCI_A0->TXBUF = CR;
     }
 }
+}
 
-void EUSCIA0_IRQHandler(void)
+void EUSCIA0_IRQHandler()
 {
     uint8_t read_val = EUSCI_A0->RXBUF;
     //EUSCI_A0->TXBUF = read_val;

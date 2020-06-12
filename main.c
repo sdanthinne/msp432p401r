@@ -10,33 +10,28 @@
 #include "bluetooth.h"
 #include "DAC.h"
 #include "arduino.h"
+#include "ADC.h"
 
 
 void main(void)
 {
     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;     // stop watchdog timer
+    uint16_t adc_val;
 
-    //setup_DAC(); // configure use of SPI with the DAC
-    setup_uart(); // Configure use of UART
-    setup_bt_uart(); // Configure use of UART
-    setup_bluetooth();
-    setup_arduino();
-    write_bt_command("TYPE2");
-    //send_number(150.999);
-    while (1)
-    {
-        //read_bt_string();
+    P5->SEL0 &= ~(BIT5); // Configure P5.5 to primary module function
+    P5->SEL1 |= BIT5; // P5.5 becomes A0
+    setup_uart();
     setup_ADC();
 
-    P1->DIR |= BIT0;
-    P1->SEL0 &= ~BIT0;
-    P1->SEL1 &= ~BIT0;
-    P1->OUT &= ~BIT0;
 
-    while (1)
+
+    while(1)
     {
-        while(!is_ready); // wait until the program read to write to DAC
-
+        adc_val = read_ADC();
     }
+
+
+
+
 
 }

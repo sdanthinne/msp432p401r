@@ -1,3 +1,4 @@
+#include "ADC.h"
 /*
  * ADC.c
  *
@@ -15,7 +16,7 @@ void setup_ADC()
             ADC14_CTL0_CONSEQ_0 | // Single channel single conversion mode
             ADC14_CTL0_ON); // Turn the ADC on
 
-    ADC14->CTL1 |= ADC14_CTL1_RES__10BIT; // 10 bit ADC resolution;
+    ADC14->CTL1 |= ADC14_CTL1_RES__14BIT; // 10 bit ADC resolution;
 
     ADC14->MCTL[0] |= ADC14_MCTLN_INCH_0; // Select P5.5 / A0 as ADC input
 
@@ -31,7 +32,7 @@ void ADC14_IRQHandler(void)
 
 }
 
-void read_ADC()
+uint16_t read_ADC()
 {
     ADC14->CTL0 |= ADC14_CTL0_SC; // Start Conversion
 

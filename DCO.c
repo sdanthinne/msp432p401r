@@ -61,7 +61,7 @@ float get_DCO_speed()
 void set_SM_DCO()
 {
 
-    setDCO(FREQ_24_MHz);
+    setDCO(FREQ_12_MHz);
     CS->KEY=CS_KEY_VAL; // unlocks cs registers
     CS->CTL1 |= CS_CTL1_SELS__DCOCLK; // sets the SMCLK to use DCO
     CS->KEY=0; //re-lock CS registers

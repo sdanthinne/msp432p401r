@@ -21,6 +21,7 @@ void main(void)
 
     P5->SEL0 |= BIT5;
     P5->SEL1 |= BIT5; // P5.5 becomes A0
+    set_SM_DCO();
     setup_uart();
     setup_ADC();
 

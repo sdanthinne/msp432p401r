@@ -11,7 +11,7 @@
 #include "msp.h"
 
 void setup_ADC();
-uint16_t read_ADC();
+int read_ADC();
 
 uint16_t adc_flag;
 

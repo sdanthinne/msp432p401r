@@ -7,9 +7,6 @@
 
 #include "msp.h"
 #include "uart.h"
-#include "bluetooth.h"
-#include "DAC.h"
-#include "arduino.h"
 #include "ADC.h"
 #include "delay.h"
 
@@ -22,24 +19,19 @@ void main(void)
 
     P5->SEL0 |= BIT5;
     P5->SEL1 |= BIT5; // P5.5 becomes A0
-    set_SM_DCO();
-    setup_uart();
-    setup_ADC();
-
-    P1->SEL0 &= ~BIT0;
-    P1->SEL1 &= ~BIT0;
-    P1->DIR |= BIT0;
-    P1->OUT &= ~BIT0;
+    set_SM_DCO();   // Set the SMClock to 12Mhz
+    setup_uart();   // Set up UART functionality on EUSCIA0
+    setup_ADC();    // Setup the ADC to use P5.5 / A0
 
     while(1)
     {
-        if(adc_flag)
+        if(adc_flag)    // When the adc has updated
         {
             delay_us(1000000); // 1 s delay
             calibrated_voltage = calibrated_adc_voltage();
-            write_UART_32bitnum(calibrated_voltage);
-            adc_flag = 0;
-            ADC14->CTL0 |= ADC14_CTL0_SC;
+            write_UART_32bitnum(calibrated_voltage);//Write voltage to terminal
+            adc_flag = 0;   // Indicate ready for new value
+            ADC14->CTL0 |= ADC14_CTL0_SC;   // Tell adc to start reading
         }
     }
 

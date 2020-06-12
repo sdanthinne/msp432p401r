@@ -73,31 +73,31 @@ void write_UART_string(char * str)
 void write_UART_16bitnum(uint16_t value)
 {
     uint8_t i;
-    uint8_t split_val[5];
+    uint8_t split_val[5]; // Array to store digits
     uint8_t byte_to_write;
 
-    split_val[4] = value% 10;
+    split_val[4] = value% 10;   // Divides and modulates value to get digits
     split_val[3] = (value / 10) % 10;
     split_val[2] = (value / 100) % 10;
     split_val[1] = (value / 1000) % 10;
     split_val[0] = (value / 10000) % 10;
     for(i=0; i<5; i++)
     {
-        byte_to_write = split_val[i] + 0x30;
-        EUSCI_A0->TXBUF = byte_to_write;
-        while(!(EUSCI_A0->IFG & UCTXIFG));
+        byte_to_write = split_val[i] + 0x30; // Get ascii value of digit
+        EUSCI_A0->TXBUF = byte_to_write; // Write digit to UART
+        while(!(EUSCI_A0->IFG & UCTXIFG));// Wait for transmission to finish
     }
-    EUSCI_A0->TXBUF = NL;
+    EUSCI_A0->TXBUF = NL; // Separate values on terminal with new line
     while(!(EUSCI_A0->IFG & UCTXIFG));
 }
 
 void write_UART_32bitnum(uint32_t value)
 {
     uint8_t i;
-    uint8_t split_val[7];
+    uint8_t split_val[7];   // Array to store digits
     uint8_t byte_to_write;
 
-    split_val[6] = value% 10;
+    split_val[6] = value% 10; // Divides and modulates value to get digit
     split_val[5] = (value / 10) % 10;
     split_val[4] = (value / 100) % 10;
     split_val[3] = (value / 1000) % 10;
@@ -107,11 +107,11 @@ void write_UART_32bitnum(uint32_t value)
 
     for(i=0; i<7; i++)
     {
-        byte_to_write = split_val[i] + 0x30;
-        EUSCI_A0->TXBUF = byte_to_write;
-        while(!(EUSCI_A0->IFG & UCTXIFG));
+        byte_to_write = split_val[i] + 0x30; // Get ascii value of digit
+        EUSCI_A0->TXBUF = byte_to_write;    // Write digit to UART
+        while(!(EUSCI_A0->IFG & UCTXIFG));  // Wait for transmission to finish
     }
-    EUSCI_A0->TXBUF = NL;
+    EUSCI_A0->TXBUF = NL;   // Separate values on terminal with new line
     while(!(EUSCI_A0->IFG & UCTXIFG));
 }
 

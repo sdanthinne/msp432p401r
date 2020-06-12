@@ -21,7 +21,15 @@
 void setup_uart();
 void write_string_uart(char *str);
 void read_string_uart();
+
+/*
+ * Writes a 16 bit number as seperate digits over UART
+ */
 void write_UART_16bitnum(uint16_t value);
+
+/*
+ * Writes a 32 bit number as seperate digits over UART
+ */
 void write_UART_32bitnum(uint32_t value);
 
 char uart_byte;

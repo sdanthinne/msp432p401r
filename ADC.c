@@ -54,6 +54,5 @@ uint16_t read_ADC()
 
     while(!(ADC14->CTL0 & ADC14_CTL0_BUSY) != 0); // wait until value has been converted
 
-    EUSCI_A0->TXBUF = ADC14->MEM[0];
-    return ADC14->MEM[0] & ADC14_MEMN_CONVRES_MASK; // extract conversion value from memory
+    return ADC14->MEM[0]; // extract conversion value from memory
 }

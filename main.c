@@ -28,16 +28,8 @@ void main(void)
     P1->DIR |= BIT0;
     P1->OUT &= ~BIT0;
 
-    while(1)
-    {
-        adc_val = read_ADC();
-//        if (adc_val > 0) {
-//            P1->OUT ^= BIT0;
-//        }
+    adc_val = read_ADC();
+    if (adc_val >= 0x3F00) {
+        P1->OUT |= BIT0;
     }
-
-
-
-
-
 }

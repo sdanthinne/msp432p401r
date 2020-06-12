@@ -81,11 +81,11 @@ void write_UART_16bitnum(uint16_t value)
     split_val[0] = (value / 10000) % 10;
     for(i=0; i<5; i++)
     {
-        EUSCI_A0->TXBUF = 0x31;
+        EUSCI_A0->TXBUF = split_val[i] + 0x30;
         while(!(EUSCI_A0->IFG & UCTXIFG));
     }
-//    EUSCI_A0->TXBUF = NL;
-//    EUSCI_A0->TXBUF = CR;
+    EUSCI_A0->TXBUF = NL;
+    EUSCI_A0->TXBUF = CR;
 }
 
 void EUSCIA0_IRQHandler()
